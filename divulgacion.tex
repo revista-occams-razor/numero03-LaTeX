@@ -1,0 +1,313 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Divulgación
+%
+% Incluye imagen del artículo
+
+\rput(8.3,-5.7){\resizebox{18cm}{!}{{\epsfbox{images/ia/or3_ia_header.eps}}}}
+
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{DIVULGACIÓN}
+
+\vspace{7.5cm}
+
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+\intro{introcolor}{E}{n este artículo hacemos una pequeña introducción a la inteligencia artificial (IA). Esta disciplina comprende muchas y diversas áreas de conocimiento e investigación, y sus metodologías cada vez se usan más en la tecnología actual. Seguro que habréis oído hablar de coches inteligentes, búsquedas inteligentes en la web, etc. Aunque el nivel de inteligencia de estos sistemas es un poco \emph{relativo}, si es cierto que utilizan métodos provenientes del área de inteligencia artificial. En este artículo también nos centraremos un poquito en un subcampo bastante importante de la IA llamado \emph{machine learning} (aprendizaje). 
+}
+
+
+
+\sectiontext{white}{black}{¿QUÉ ES LA INTELIGENCIA ARTIFICIAL?}
+
+Esta es una buena pregunta que, por desgracia, no tiene una contestación clara. Probablemente la imagen más extendida de la inteligencia artificial podría ser la de un robot que se comporta como un humano además de parecerse a él, algo al estilo de la película \emph{Yo, Robot}. Sin embargo, la IA comprende muchas otras áreas aparte de la robótica. 
+
+Buscar una única definición para la IA es difícil, así es que vamos a
+recoger diferentes ideas sobre lo que es un sistema inteligente y
+organizarlas un poco de acuerdo con su finalidad. Nos basaremos en la
+clasificación que Russell y Norvig presentan en su libro
+\emph{Artificial Intelligence: A modern
+  approach}~\cite{russell2003ai}. Las distintas definiciones están
+organizadas en la Tabla 1, y a continuación pasamos a explicarlas en más detalle.
+
+
+
+Los \emph{sistemas que actúan como humanos} pretenden tener un comportamiento similar al de una persona. En este caso se supone que el hombre es el ser más inteligente, y comparamos la inteligencia de las máquinas con la suya. El científico Alan Turing propuso en 1950 el \emph{test de Turing}. En este test, una persona entabla una conversación durante 5 minutos con el sistema artificial que queremos probar. El test se supone \emph{superado} por el sistema artificial si durante más del 30\% del tiempo, la persona no sabe distinguir si las contestaciones provienen de una
+persona o de un sistema artificial. Existen varios sistemas para engañar a la gente durante una conversación, como por ejemplo el chatbot \textsc{Mgonz} o los programas \textsc{Eliza} y \textsc{Alice}. Sin embargo ninguno ha sido capaz de superar el 30\% ante un jurado preparado.
+
+Es posible que algún lector cinéfilo haya pensado en la película \emph{Blade Runner} al oir hablar del test de Turing. En esta película el policía caza-replicantes (Harrison Ford) aplica un test a las personas para detectar si son replicantes. El test de la película se basa en la diferente respuesta empática y emocional de un ser artificial con respecto a un humano. En realidad el test de empatía en \emph{Blade Runner} está muy bien fundamentado, ya que uno de los principales problemas que se plantean en la inteligencia artificial es como hacer que un robot tenga sentimientos.
+
+
+
+
+
+Siguiendo con la clasificación de sistemas inteligentes, los
+\emph{sistemas que piensan como humanos} intentan modelar el
+funcionamiento de la mente humana. A esto se dedica más concretamente
+la \emph{ciencia cognitiva}, un campo interdisciplinar que une la IA
+junto con la psicología y la neurociencia, con la finalidad de
+intentar entender como funciona el cerebro de las
+personas. Últimamente existe un gran interés en informática e IA por
+los denominados \emph{sistemas cognitivos}. 
+
+
+
+
+La idea es crear sistemas artificiales que emulen la forma de entender el mundo tal y como lo hacen las personas. Algunos grandes proyectos europeos de investigación como CoSy~\cite{cosy} se dedican a este área.
+
+\ebOpage{introcolor}{0.25}{DIVULGACIÓN}
+
+Los \emph{sistemas que piensan de forma razonada} se basan en las reglas de la lógica: ``Sócrates es un hombre; todos los hombres son mortales; por lo tanto Sócrates es mortal''. Un sistema basado en reglas de lógica pretende representar los distintos elementos que existen en el mundo y la relación entre ellos. El principal problema de este enfoque es que no parece muy factible representar \emph{todo} lo que existe junto con \emph{todas} sus relaciones. 
+
+\begin{entradilla}
+{\em Los sistemas que piensan de forma razonada se basan
+\color{introcolor}{en las reglas de la lógica}}
+\end{entradilla}
+
+
+Por último, los \emph{sistemas que actúan de forma razonada} vendrían a estar representados por \emph{agentes racionales}. Estos agentes perciben el entorno, razonan sobre él, y actúan de forma que maximizan la probabilidad de conseguir un objetivo. Pongamos por ejemplo un computador que juega al ajedrez, el famoso \textsc{Deep Blue} de IBM. \textsc{Deep Blue} tiene que localizar las piezas del contrario, entender la situación del juego, y generar un movimiento que maximice sus posibilidades de ganar. A lo mejor, alguno se preguntará porqué diferenciar los sistemas que actúan como humanos de los que actúan de forma razonada. Creo que la respuesta podría ser esta: los humanos, por suerte, también actuamos por sentimientos y, a veces, por intuición.
+
+
+\begin{center}
+\myfig{0}{images/ia/or3_ia_tabla1.eps}{1.0}
+{\footnotesize\bf Tabla 1. Clasificación de Sistemas Inteligentes}
+\end{center}
+
+
+
+La clasificación anterior es un poco teórica e incluso filosófica. Sin embargo, podemos presentar la IA simplemente listando las disciplinas que abarca. Algunos ejemplos son: lenguaje natural, representación del conocimiento, razonamiento, aprendizaje, robótica, planificación, visión artificial, teoría de juegos, y otras más. Todas ellas se basan fundamentalmente en la lógica y las matemáticas, siendo muy importantes la estadística y la probabilidad. En este artículo vamos a centrarnos en el aprendizaje, por ser una de las áreas más importante dentro de la IA. En la siguiente sección describiremos más detalladamente lo que se entiende por aprendizaje en IA, y después trabajaremos con un ejemplo práctico.
+
+ 
+
+
+\sectiontext{white}{black}{MACHINE LEARNING (APRENDIZAJE)}
+Para describir lo que es Machine Learning (ML),  usaremos algunas de las ideas del libro de Tom Mitchell \emph{Machine Learning}~\cite{mitchell97ml}. Según este libro, ML es el campo relacionado con las ideas necesarias para construir programas que automáticamente mejoran (o aprenden) con la experiencia. Esta definición puede ser un poco confusa, ya que puede dar la idea de un programa que mejora con el paso del tiempo. Sin embargo, la mayoría de las técnicas utilizadas en ML están relacionadas con aprendizaje en una sola vez, es decir, el sistema aprende de ejemplos que se le muestran una vez y luego aplica su aprendizaje posteriormente, pero no modifica lo aprendido la primera vez. Aunque también existen métodos para que el ordenador modifique sus modelos aprendidos con el paso del tiempo (aprendizaje continuo), éstos todavía forman una parte pequeña dentro de ML.
+
+
+Otra cuestión importante es qué se entiende por aprender cuando hablamos de ordenadores. En general, cuando se habla de aprender, la idea es la de encontrar un modelo, basado generalmente en la estadística y la probabilidad, que explique \emph{algo}, de forma que posteriormente el ordenador sea capaz de reconocer de nuevo ese \emph{algo} cuando se le presente. Cuando hablo de \emph{algo} me refiero a situaciones, objetos, acciones, o cualquier otra cosa que se os pueda ocurrir que pueda ser reconocido de alguna forma. 
+
+
+
+
+
+Seamos más concretos poniendo algunos ejemplos. Podemos querer programar un ordenador para que reconozca los distintos tipos de fruta cuando se le presenten. En este caso hablamos de reconocimiento de objetos. También podemos programar un reconocedor de lenguaje natural. En este caso clasificamos sonidos en palabras y palabras en frases. En cualquiera de los dos casos anteriores el ordenador primero tiene que aprender. En el caso de la fruta, tiene que aprender lo que es una manzana y como se diferencia de una naranja. En el caso de lenguaje natural, el sistema tiene que aprender cuales son los fonemas que forman una palabra. Por ejemplo, los fonemas ``m'' + ``e'' + ``s'' + ``a'', y por este orden, forman la palabra ``mesa''. Además, ``mesa'' es ya una palabra completa y no habrá que añadir más fonemas, excepto si es plural. Como vemos aquí, existen muchas y diferentes situaciones en los que el ordenador puede aprender.
+
+\begin{entradilla}
+{\em Los sistemas supervisados usan \color{introcolor}{ejemplos para aprender}}
+\end{entradilla}
+
+
+En este artículo nos centraremos en el aprendizaje supervisado. En este tipo de aprendizaje, el ordenador crea su modelo usando ejemplos que se le muestran junto con su clasificación. En el ejemplo de la fruta, le enseñaríamos al ordenador cada vez una fruta y le diríamos su nombre, entonces el ordenador generaría un modelo en base a los ejemplos que le enseñamos con su correspondiente clasificación. Después de aprender, el ordenador debería de ser capaz de acertar el nombre de las piezas de fruta que le enseñemos posteriormente.
+
+\ebOpage{introcolor}{0.25}{DIVULGACIÓN}
+
+La clasificación de objetos nos sirve para introducir un nuevo problema muy importante en ML, y es, cuáles son las características o \emph{atributos} que el ordenador debe usar para su modelo. Por ejemplo, en el caso de la fruta, el nombre del vendedor al que se la compramos no parece un buen atributo para clasificarla. Sin embargo, el color parece mucho más adecuado, o quizás la forma, o el tamaño, o quizás estas tres últimas al mismo tiempo.
+ 
+Creo que ahora tenemos un poco más claro lo que esperamos de un algoritmo de aprendizaje. Primero, que sepa elegir los atributos adecuadas para su modelo. Y segundo, que sepa establecer los parámetros del modelo.
+
+Cuando hablamos de aprender un modelo, nos referimos la mayor parte de
+las veces a entrenar un \emph{clasificador}. Un clasificador, también
+llamado hipótesis, es una función que clasifica unos atributos de
+entrada dentro de uno de los posibles conceptos de salida. Pongamos un
+ejemplo extraído del libro \emph{Data Mining}, de Witten y
+Frank~\cite{dataMining}. La idea es aprender un clasificador para
+determinar cuando un día es bueno para jugar al fútbol. Para ello
+tenemos recogidas una serie de medidas durante 14 días con nuestra
+opinión sobre si el día es bueno o no. 
+
+
+\myfig{0}{images/ia/or3_ia_tabla2.eps}{0.9}
+{\bf Tabla 2. Valores de los Atributos para 14 días.}
+
+\columnbreak
+
+\myfig{0}{images/ia/or3_ia_tabla3.eps}{0.8}
+{\bf Tabla 3. Conjunto de Reglas.}
+
+\bigskip
+
+
+
+La Tabla 2 muestra los atributos de cada día junto con su clasificación para jugar al fútbol (SI o NO), en el atributo \texttt{jugar}. Ahora tenemos que escribir un programa que analice los datos y nos devuelva nuestro clasificador. 
+
+
+
+
+
+\sectiontext{white}{black}{UN CLASIFICADOR SENCILLO: UNA REGLA}
+
+
+Uno de los clasificadores mas sencillos que podemos obtener es una simple regla \texttt{if-then-else}. Este clasificador se denomina también $1R$ (1-Rule). La idea es elegir un sólo atributo de entre todos para clasificar el día. Por supuesto, habrá que elegir el atributo con el que menos nos equivoquemos. La idea del clasificador $1R$ es la siguiente~\cite{dataMining}.
+
+
+
+
+Cogemos un atributo, \texttt{previsión}, y establecemos uno de sus
+valores, \texttt{soleado}, y miramos el valor que se repite más en el
+atributo que queremos aprender, en nuestro caso \texttt{jugar}. Al
+atributo a aprender también se le denomina \emph{concepto} y a sus
+valores se les denomina \emph{clases}. Bien, pues de acuerdo con la
+Tabla 2, si sólo elegimos el atributo \texttt{previsión} junto con su valor \texttt{soleado}, entonces la clase que más se repite en el concepto \texttt{jugar} es \texttt{NO} (3 veces \texttt{NO} y 2 veces \texttt{SI}). Como \texttt{NO} es el más repetido, creamos una regla del tipo:
+
+{\small
+\begin{verbatim}
+if previsión = soleado then jugar = NO
+\end{verbatim}
+}
+
+Si aplicamos sólo esta regla, nos habremos equivocado en dos ocasiones de las 5 posibles cuando \texttt{previsión=soleado} (las dos veces en que \texttt{jugar=SI}), es decir, cometemos un error de 2/5.
+
+
+
+
+Ahora repetimos el proceso con el resto de atributos y sus valores,
+obteniendo la Tabla 3. Vemos que en esta tabla también hemos calculado un error total por cada conjunto de reglas correspondiente a un solo atributo. Para ello simplemente sumamos los errores de cada regla. 
+
+
+
+\ebOpage{introcolor}{0.25}{DIVULGACIÓN}
+
+Ahora sólo nos falta elegir el conjunto de reglas correspondiente al atributo con menor error total. En nuestro caso podemos elegir entre el atributo \texttt{previsión} o el atributo \texttt{humedad}, pues los dos tienen un error total de $4/14$. Siguiendo la idea de \emph{Occam's razor}, elegimos la regla más simple:
+
+
+
+{\small
+\begin{verbatim}
+if humedad = alta then jugar = NO
+elseif humedad = normal then jugar = SI
+\end{verbatim}
+}
+
+Alternativamente, la regla eligiendo el atributo \texttt{previsión} sería como sigue:
+
+{\small
+\begin{verbatim}
+if previsión = soleado then jugar = NO
+elseif previsión = nublado then jugar = SI
+elseif previsión = lloviendo then jugar = SI
+\end{verbatim}
+}
+
+El pseudocódigo para calcular el conjunto de reglas final podría ser algo parecido al siguiente: 
+
+{\small
+\begin{verbatim}
+Para cada atributo,
+  Para cada valor del atributo,
+    encontrar la clase más frecuente
+    generar una regla asignando esta clase
+  Calcular el ratio de error total del \
+  conjunto de reglas
+Elegir el conjunto de reglas con menor error total
+\end{verbatim}
+}  
+
+Bueno, pues ya hemos programado un algoritmo de aprendizaje para saber si jugar al fútbol o no. Ahora sólo sería cuestión de utilizar la regla final elegida y aplicarla a cada nuevo día. 
+
+Vamos a repasar cuales son las diferentes componentes del sistema de
+aprendizaje de $1R$. Primero tenemos los datos iniciales (Tabla 2) también llamados \emph{datos de entrenamiento}. Luego tenemos la forma del modelo (o hipótesis) que queremos aprender, en este caso una regla \texttt{if-then-else}. Luego tenemos el método para elegir los parámetros de nuestro modelo (pseudocódigo). Y finalmente tenemos los parámetros de nuestro modelo, que son el atributo elegido (\texttt{humedad}) y sus valores (\texttt{alta, normal}). Este esquema de aprendizaje es el más común en los métodos de Machine Learning.
+
+Y llegados a este punto terminamos esta breve introducción a la inteligencia artificial y al aprendizaje. Esperamos que os haya gustado y que en alguno se haya despertado el interés por la IA. También nos gustaría mucho que nos dierais vuestra opinión para saber si queréis que sigamos con este tema.
+
+
+\sectiontext{white}{black}{ALGUNAS NOTAS ADICIONALES}
+\begin{itemize}
+\item El libro \emph{Artificial Intelligence: A modern approach}~\cite{russell2003ai} es una lectura básica para todo aquel que quiera introducirse en la IA. Este libro es usado por más de 1000 universidades en 91 países. Del mismo modo los libros \emph{Machine Learning}~\cite{mitchell97ml} y \emph{Data Mining}~\cite{dataMining} son referencia obligada en el área de aprendizaje. Todos los métodos explicados en el libro \emph{Data Mining}, incluido $1R$, están progamados en lenguaje Java y pueden ser encontrados en el software de aprendizaje de libre distribución WEKA~\cite{weka}. De hecho, parte del libro explica como usar WEKA. 
+
+\item La vida de Alan Turing es muy interesante. Trabajó como desencriptador durante la segunda guerra mundial y fue perseguido por sus tendencias homosexuales. Su muerte aún no esta aclarada. Además del test de Turing, Alan Turing también creo la \emph{máquina de Turing}, base la informática actual. Podéis encontrar más información en~\cite{alanTuring} y por supuesto también en \textsc{Wikipedia}.
+
+\item El chatbot \textsc{Mgonz} y los programas \textsc{Eliza} y \textsc{Alice} (o sus diversas implementaciones) pueden encontrarse fácilmente en Internet. Intentad charlar con alguno si tenéis tiempo.
+
+\item Cognitive Systems for Cognitive Assistants (CoSy)~\cite{cosy} es el proyecto dentro del cual estoy realizando mi doctorado. Este proyecto ganó el premio a la mejor propuesta en el marco europeo FP5. Mi labor se centra en el escenario de exploración y representación de entornos cerrados (Explorer).
+\end{itemize}
+
+
+\begin{center}
+\colorbox{excolor}{
+
+\begin{minipage}{.98\linewidth}
+{\bf\sf\Large Sobre el Autor}
+\vspace{1mm}
+\hrule
+\bigskip
+\small
+Me llamo Óscar Martínez Mozos y trabajo como investigador en la universidad ``Albert-Ludwigs-Universitaet Freiburg'', en Freiburg, Alemania. Actualmente escribo mi tesis doctoral sobre robótica móvil, bajo la supervisión del catedrático Wolfram Burgard, un investigador importante en este tema. Anteriormente estuve realizando investigación en visión artificial y natural en el Instituto de Bioingeniería en la universidad Miguel Hernández, en Elche, Alicante. Mis áreas de investigación son, principalmente, aprendizaje, robótica móvil, visión, e inteligencia artificial en general. Para más información podéis visitar mi página web:  
+
+http://www.informatik.uni-freiburg.de/~omartine/
+
+
+\noindent También podéis poneros en contacto conmigo en la dirección de email:
+{\tt omozos@googlemail.com}
+
+\noindent Estaré encantado de contestar a vuestros correos sobre este o cualquier otro tema.
+
+
+\bigskip
+
+\end{minipage}
+}
+\end{center}
+
+\normalsize
+
+\end{multicols}
+\small 
+
+\colorbox{introcolor}{
+\begin{minipage}{.98\linewidth}
+\begin{multicols}{2}
+\begin{thebibliography}{1}
+
+\bibitem{cosy}
+http://www.cognitivesystems.org/.
+
+\bibitem{weka}
+http://www.cs.waikato.ac.nz/ml/weka/.
+
+\bibitem{alanTuring}
+http://www.turing.org.uk/.
+
+\bibitem{mitchell97ml}
+Tom~M. Mitchell.
+\newblock {\em Machine Learning}.
+\newblock McGraw Hill, 1997.
+
+\bibitem{russell2003ai}
+Stuart Russell and Peter Norvig.
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Prentice Hall, second edition, 2003.
+
+\bibitem{dataMining}
+Ian~H. Witten and Eibe Frank.
+\newblock {\em Data Mining}.
+\newblock Morgan Kaufmann, 2000.
+
+\end{thebibliography}
+
+\end{multicols}
+\end{minipage}
+}
+\normalsize
+
+
+\clearpage
+\pagebreak

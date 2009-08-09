@@ -1,0 +1,233 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion El Rincón de los Lectores
+%
+% Incluye imagen del artículo
+
+
+\rput(1.8,-2.0){\resizebox{!}{6.0cm}{{\epsfbox{images/general/lectores.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.35}{RINCÓN DE LOS LECTORES}
+
+\mtitle{7cm}{El Rincón de los lectores}
+
+\msubtitle{10cm}{Vuestros comentarios, sugerencias,...}
+
+{\sf por The Occam's Razor Team}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+\sectiontext{white}{black}{SSH}
+
+{\bf enviado por Luis Rodríguez}
+\vspace{2mm}
+\hrule
+\vspace{2mm}
+
+\medskip
+
+{\em Simplemente señalar que los usuarios de Windows pueden descargarse en el
+sitio anónimo de ftp del laboratorio de mi escuela 
+
+(\verb!ftp://ftp.lab.fi.uva.es/pub/ssh/Windows!) 
+
+el software cliente Open SSH, que
+permite acceder mediante ssh a una máquina remota.
+
+Un saludo y enhorabuena por la revista.}
+
+
+\vspace{3mm}
+
+
+\sectiontext{white}{black}{MÁS SSH}
+
+{\bf enviado por Cruz Enrique Borges Hernández}
+\vspace{2mm}
+\hrule
+\vspace{2mm}
+
+\medskip
+
+{\em Muy buen artículo, pero creo q se os ha olvidado mencionar la kioslave fish
+que te permite acceder desde cualquier aplicación kde a fichero remotos a
+través de ssh. Es extremadamente útil ;)
+}
+
+--
+
+Muchas gracias por ambos apuntes, aquí los ponemos para el resto de lectores.
+
+\vspace{3mm}
+
+\sectiontext{white}{black}{ERROR EN ARTÍCULO SSH}
+
+{\bf enviado por Gerardo Elian Gidoni}
+\vspace{2mm}
+\hrule
+\vspace{2mm}
+
+Gerardo nos apuntó un error en el artículo SSH que seguro que muchos
+habéis detectado, y nos proporciona una detallada explicación que
+reproducimos a continuación... aún no sabemos como ha podido pasar :P.
+
+Muchas gracias Gerardo por esta contribución.
+
+
+--
+
+{\em
+Buenas,
+
+Antes que nada recién acabo de conocer la revista y me han gustado mucho los
+artículos que leí.
+
+Interesante proyecto, felicitaciones :-)
+
+
+Por otro lado creo haber encontrado un error en el artículo sobre túneles
+SSH donde se habla de redirección de puertos remotos. (paginas 8 y 9).
+
+Pego acá el fragmento.
+}
+
+--
+
+Podemos utilizar el flag -R para conseguir un resulta-
+do similar. La sintaxis es idéntica, pero en este caso el
+puerto de redirección se abrirá en la máquina remota.
+Como podéis imaginar, nuestra máquina ``proyecto-x''
+puede ser cualquier servicio interno de la red remota:
+servidores web, pop, etc...
+Por ejemplo, si la máquina ``proyecto-x'' ofrece un
+interfaz web, una vez establecido el túnel, solo tenemos que apuntar nuestro navegador a la url:
+``http://entrada/1234'' si la redirección de puertos es
+remota, o a ``http://localhost:1234'' si optamos por la
+redirección local.
+
+{\footnotesize
+\begin{verbatim}
+occam@razor$ ssh -R1234:proyecto-x:5000 entrada
+Password:
+occam@entrada$
+....
+\end{verbatim}
+}
+
+[En otro terminal]
+
+{\footnotesize
+\begin{verbatim}
+occam@razor$ nc entrada 1234
+Bienvenido al Proyecto X
+}
+\end{verbatim}
+}
+%$
+
+{\em
+Creo que se ha confundido la idea de ``-R''. El parámetro ``-R'' sirve para
+hacer lo opuesto a ``-L''. Una situación acorde a la utilidad de ``-R'' sería:
+
+Necesitamos acceder al puerto ``5000'' de ``proyecto-x'' por medio de ``entrada''
+pero ``entrada'' no acepta conexiones desde el exterior, por lo que desde
+``razor'' no podríamos iniciar la conexión. Entonces la idea sería que DESDE
+``entrada'' iniciemos la conexion HACIA ``razor'', entonces haríamos
+}
+
+{\footnotesize
+\begin{verbatim}
+usuario@entrada$ ssh -R1234:proyecto-x:5000 razor
+\end{verbatim}
+%$
+}
+
+{\em
+Esto nos permitiría acceder ahora a ``proyecto-x'' iniciando una conexion al
+puerto ``1234'' de ``razor''.
+Entonces ahora si haríamos:
+}
+%$
+
+{\footnotesize
+\begin{verbatim}
+occam@razor$ nc localhost 1234
+Bienvenido al Proyecto X
+\end{verbatim}
+%$
+}
+
+{\em Además donde dice:}
+
+Por ejemplo, si la máquina ``proyecto-x'' ofrece un
+interfaz web, una vez establecido el túnel, solo tenemos que apuntar nuestro navegador a la url:
+\verb!http://entrada/1234! si la redirección de puertos es
+remota
+
+{\em Esto ultimo tampoco seria cierto.
+
+
+Espero no haberme confundido y que les sean útiles mis comentarios.
+
+saludos!
+
+- http://gerelblog.blogspot.com
+}
+
+
+
+
+\vspace{6mm}
+
+\colorbox{excolor}{
+\begin{minipage}{.9\linewidth}
+{\bf\sf\Large ENVIADNOS...}
+\vspace{1mm}
+\hrule
+\bigskip
+
+Vuestros comentarios, sugerencias, ideas, críticas (constructivas
+claro), correcciones, soluciones, disoluciones o cualquier cosa que se
+os ocurra... a:
+
+\bigskip
+
+{\tt occams-razor@uvigo.es}
+
+\bigskip
+
+{\sf{\textbf LOS ESPERAMOS!!!!}}
+
+\bigskip
+
+\end{minipage}
+}
+
+
+
+
+
+\raggedcolumns
+\pagebreak
+
+\end{multicols}
+
+\pagebreak

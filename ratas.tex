@@ -1,0 +1,277 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Ratas de Biblioteca
+%
+% Incluye imagen del artículo
+
+
+\rput(1,-2.3){\resizebox{!}{3cm}{{\epsfbox{images/ratas/tcc-logo.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{RATAS DE BIBLIOTECA}
+
+\mtitle{4cm}{TCClib}
+
+\msubtitle{11cm}{Utiliza C como tu lenguaje de Script}
+
+{\sf por Er Interprete}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{P}{ensando en incorporar un lenguaje de script a tu
+aplicación?. Python, Java, Ruby, 
+Guile?... eso es para nenazas. Los programadores de verdad usan C
+incluso para sus scripts. 
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+
+Bromas a parte, en este número vamos a
+hablar de tcclib, una librería que se distribuye junto a TCC (el Tiny C
+Compiler o Compilador C Pequeñito). 
+
+TCC es un compilador de C desarrollado por {\em Fabrice Bellard}.
+Es  muy pequeño y rápido. Como os podéis imaginar no es gcc, pero para
+ciertas aplicaciones puede resultar muy útil. 
+
+Lo que tcclib nos permite, es compilar código C en nuestras
+aplicaciones de una forma muy fácil y sencilla. Ahí es nada!. Como
+siempre vamos directos al código.
+
+\sectiontext{white}{black}{COMPILANDO Y EJECUTANDO}
+
+Aquí tenéis el código de un pequeño programa que utiliza tcclib
+para leer un fichero de texto, compilarlo y ejecutarlo. Este ejemplo
+es una modificación del programa de prueba incluido con las fuentes de
+tcc, básicamente para que ocupe poco y nos quepa en esta sección
+:). Como siempre recordad que las comprobaciones de error han sido eliminadas.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\small}   
+\begin{lstlisting}
+#include <stdio.h>
+#include <string.h>
+#include <libtcc.h>
+
+/* Aquí iría el API que ofrecemos 
+   a los scripts */
+void mi_func (char *str) { 
+  printf ("PRINCIPAL(mu_funcion):%s", str);
+}
+
+int
+main (int argc, char *argv[])
+{
+  TCCState     *s;
+  FILE         *f;
+  char          b[1024];
+  int           (*un_script)(char *);
+  unsigned long v;
+  
+  /* Lee script */
+  memset (b, 0, 1024);
+  f = fopen (argv[1], "rt"); 
+  fread (b, 1024, 1, f); fclose (f);
+
+  /* Configuramos y compilamos */
+  s = tcc_new ();
+  printf ("Setting compiler %p\n", s);
+  tcc_set_output_type (s, TCC_OUTPUT_MEMORY);
+  tcc_compile_string (s, b);
+
+  /* Añadimos nuestro especial API */
+  tcc_add_symbol (s, "mi_func", 
+               (unsigned long)&mi_func);
+  tcc_relocate (s);
+
+  /* Ejecutamos */
+  tcc_get_symbol (s, &v, "mi_script");
+  mi_script = (void*)v;
+  mi_script ("Hola!!!");
+  tcc_delete (s);
+}
+\end{lstlisting}
+
+Sí, vale, esto parece un poco más complicado que lo que solemos
+incluir en esta sección, pero enseguida veremos que es mucho más
+sencillo de lo que parece. 
+
+\begin{entradilla}
+{\em TCC y tcclib compilan código {\color{introcolor} C realmente rápido}}
+\end{entradilla}
+
+Lo que este programa hace es cargar un fichero de texto que contendrá código
+C. La única condición que debe cumplir es definir la función
+"mi\_script", que recibirá como parámetro una cadena de caracteres.
+
+Por otra parte, el programa exporta una función, llamada mi\_func que
+puede ser utilizada por nuestros scripts, para, por ejemplo,
+comunicarse con la aplicación principal... seguro que se os ocurren
+mil ideas.
+
+\sectiontext{white}{black}{LAS LLAMADAS A TCCLIB}
+
+Como podéis observar, utilizamos una variable del tipo TCCState para
+referirnos a lo que podríamos llamar nuestra instancia del
+compilador. Una vez creada (con tcc\_new), procedemos a configurarla. En
+nuestro caso simplemente indicamos que queremos compilar en memoria (tcc\_set\_output\_type).
+
+tcclib es capaz de generar ejecutables, librerías dinámicas o código
+objeto, además de la compilación en memoria que a nosotros nos
+interesa.
+
+
+
+Tras esto, utilizamos tcc\_compile\_string. Esta función, como os podréis
+imaginar, transforma una cadena de caracteres que contiene código C en
+código ejecutable... es decir, compila la cadena, como su propio
+nombre indica :).
+
+\ebOpage{introcolor}{0.25}{RATAS DE BIBLIOTECA}
+
+Ahora que tenemos nuestro código compilado, nos interesan dos
+cosas. La primera es que nuestro script pueda llamar a funciones
+definidas por nuestro programa y por tanto se pueda utilizar como un
+lenguaje de script. La segunda es poder referenciar las funciones definidas
+por nuestro script y que hemos compilado en memoria, para, por tanto,
+ejecutar el código que contiene. 
+
+
+
+Lo primero se consigue con la llamada a la función
+tcc\_add\_symbol. Esta función recibe como parámetros el nombre de la
+función que se desea añadir (realmente un símbolo) al sistema, y un
+puntero al código de dicha función. 
+
+Para lo segundo (ejecutar el código que proporciona el script)
+utilizamos la función tcc\_get\_symbol, que realiza la operación
+complementaria a tcc\_add\_symbol. En el programa es necesario 
+utilizar una variable auxiliar debido a como está definida esta
+función.
+
+Una cosa importante. Antes de poder ejecutar la función
+tcc\_get\_symbol, es necesario ejecutar tcc\_relocate. No vamos a
+entrar en explicaciones, pero esta función lleva a cabo el proceso de
+``relocación'' que normalmente realiza el cargador de programas o
+el linker dinámico. 
+
+\begin{entradilla}
+{\em tcclib nos permite {\color{introcolor} compilar, linkar y
+ejecutar} de forma sencilla}
+\end{entradilla}
+
+Tened en cuenta que tcclib nos permite llevar a cabo todo un proceso
+que normalmente requiere de varias herramientas: compilador, linker, cargador.
+
+\sectiontext{white}{black}{EL SCRIPT}
+
+Ahora que ya sabemos como funciona nuestro programa, vamos a escribir
+nuestro primer script y ver si todo esto funciona.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\small}   
+\begin{lstlisting}
+int mi_script (char *str)
+{
+   printf ("Hola soy un script. "
+           "Mi parámetro es: '%s'\n");
+   mi_func ("Script llamando a tierra!!");
+   return 0;
+}
+\end{lstlisting}
+
+¿Simple no?, pero con bastante información. Lo primero que vemos es que
+se trata de código C estándar. Lo segundo es que estamos utilizando la
+función printf sin más. Esto es así porque nuestro programa principal
+incluye la librería C estándar. Para utilizar otras librerías, echadle
+un ojo a la función tcc\_add\_file.
+
+Lo tercero es que estamos ejecutando la función mi\_func que nuestro
+programa principal exporta. ¡Güay!. Basta de rollo, vamos a compilar y
+comprobar el resultado de una ejecución.
+
+{\small
+\begin{verbatim}
+occam@razor $  gcc -o test test.c \
+> /usr/local/lib/libtcc.a -ldl
+occam@razor $ ./test script.c
+Hola soy un script. Mi parámetro es: 'Hola!!!'
+PRINCIPAL:Script llamando a tierra!!
+\end{verbatim}
+}
+
+Como podéis ver, libtcc es una librería estática y normalmente la
+tendréis instalada en /usr/local/lib. La librería dl (dynamic linking)
+también es necesaria. Si no la utilizáis obtendréis un error referente
+a funciones como dlopen o dlsym.
+
+\begin{entradilla}
+{\em Usando TCC podéis {\color{introcolor}utilizar el lenguaje C como lenguaje de script}
+ejecutando código nativo!!}
+\end{entradilla}
+
+Lo segundo es que si habéis copiado los ejemplos al pié de la letra,
+veréis que vuestro programa no produce la salida esperada... veréis
+algunos "marcianitos". El script tiene un error. Es muy tonto, así que
+seguro que ya lo habéis visto. Lo interesante de esto es que solo
+tenéis que abrir el script con vuestro procesador de textos
+favorito. modificarlo y ya está... no hay que compilar nada, como si
+estuviéramos trabajando en Perl, Python, TCL o similares :).
+
+
+\sectiontext{white}{black}{COMENTARIOS FINALES}
+
+Al principio de este texto oa comentábamos que tcc es un compilador muy
+rápido y pequeño. Esto es algo muy interesante, pero tiene como
+principal contrapartida que el código generado, no está tan optimizado
+como el que pueda generar gcc. Este es el precio a pagar por la
+velocidad y la versatilidad de disponer de un compilador como parte de
+nuestros porgramas. Con esto queremos decir que, cada cosa es para lo
+que es, y no existen las panaceas :).
+
+Por otra parte, en el momento de escribir este artículo, fué necesario obtener tcc de
+su CVS de desarrollo en savanah. El paquete en la web, no compila en
+los sistemas modernos y las distribuciones, al menos Ubuntu, solo
+incluyen el compilador tcc, y no la librería tcclib.
+
+El proceso de instalación es el habitual configure, make y make
+install.
+
+La versión del CVS parece que también funciona en Windows, pero eso no
+lo hemos probado, así que si alguno se anima a probarlo y confirmarlo,
+esperamos sus comentarios.
+
+Por último, y como viene siendo habitual, recomendaros que le echéis
+un ojo a libtcc.h. Veréis que hay varias funciones que aquí no hemos
+comentado pero que os resultarán muy útiles en vuestros
+programas. También os recomendamos una visita a la página del señor
+Fabrice Bellard (http://fabrice.bellard.free.fr/), donde encontraréis
+cosas realmente interesantes... A alguien le suena qemu?
+
+Hasta el próximo número.
+
+\raggedcolumns
+\pagebreak
+
+\end{multicols}
+
+\pagebreak

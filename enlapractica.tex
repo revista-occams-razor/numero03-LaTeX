@@ -1,0 +1,680 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Ratas de Biblioteca
+%
+% Incluye imagen del artículo
+
+
+\rput(9.5,-4.5){\resizebox{!}{6cm}{{\epsfbox{images/trujamana/trujamana.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{EN LA PRÁCTICA}
+
+
+
+\vspace{3.5cm}
+
+\mtitle{11cm}{{Trujamana o Localizadora}}
+\msubtitle{8cm}{Introducción a la Localización de Software}
+
+{\sf por Silvia Carril Caldelas (silvia@ilialang.com)}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{T}{trujamán, na. (Del ár. hisp. tur\v{g}umán, este del
+ár. clás. tur\v{g}um\={a}n, intérprete, este del arameo rabínico t\={u}rgm\={a}n[\={a}] y
+siriaco targm\={a}n\={a}, y estos del acadio targam\={a}nu[m] o
+turgam\={a}nu[m]). 2. p. us. intérprete (|| de lenguas)
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+Hace años que ante la pregunta: ``¿En qué trabajas?'' he desistido de
+intentar dar una explicación lógica e inteligible a mi
+interlocutor. El responder ``Soy localizadora de software'' da pie a
+las reacciones y expresiones faciales más sorprendentes. 
+
+Lo  cierto es que la mía es una profesión cada vez más en auge y,
+definitivamente, una cuyos resultados son disfrutados a diario por
+millones de usuarios de ordenadores y, sin embargo, continúa siendo
+una gran desconocida... no sólo para los propios usuarios sino también
+para programadores e ingenieros informáticos.  
+
+La globalización (ese concepto tan de moda ahora) aúna a gentes y
+países de todo el mundo. No obstante, aunque cada vez nos parecemos
+más un español de España y un americano de los EE.UU., continúa
+habiendo grandes diferencias, singularidades y ``barreras'' (por
+llamarle de algún modo). Una de ellas es el idioma y el uso que cada
+individuo hace del mismo en su vida cotidiana. Uno de esos usos es el
+que hacemos a diario millones de usuarios informáticos totalmente
+ajenos al hecho de que en esa aplicación de software que estamos
+utilizando sin darle mayor relevancia se ha invertido mucho tiempo y
+esfuerzo para lograr que llegue a nosotros en nuestro propio idioma.  
+
+\sectiontext{white}{black}{¿QUÉ ES LA LOCALIZACIÓN?}
+
+El concepto de localización o internacionalización es muy simple, es
+decir, es la adaptación de aplicaciones de software a otros entornos,
+particularmente de otros países y culturas. Entre otros aspectos es
+responsable de asegurar aspectos, obvios para los usuarios de idiomas
+con base en el alfabeto romano, como la capacidad para representar y
+visualizar los sistemas alfabéticos de un idioma en cuestión. Y ésa es
+tan sólo la punta del iceberg...
+
+La diferencia entre internacionalización (generalmente, abreviado como
+i18n o I18n o I18N) y localización (generalmente, abreviado como L10n
+o l10n) es sutil pero importante. La internacionalización es la
+adaptación de productos para su uso potencial virtualmente en
+cualquier parte del mundo, mientras que la localización implica la
+inclusión de características particulares para su uso con una
+configuración regional específica. Ambos procesos se complementan
+entre sí y son necesarios conjuntamente para lograr un sistema que
+funcione de modo global.  
+
+\begin{entradilla}
+{\em Los procesos de internalización y localización se {\color{introcolor}abrevian como i18n y L10n}}
+\end{entradilla}
+
+Así pues, la internacionalización y la localización son algo mucho más
+amplio y complejo que la traducción. Abarcan no solamente el aspecto
+esencial de la transposición de un idioma a otro del código que
+compone una aplicación sino que van más allá. Además de los aspectos
+puramente lingüísticos, en su aplicación también tratan cuestiones
+culturales y técnicas. Estos incluyen entre otros:  
+
+\begin{itemize}
+\item La adaptación de formatos de hora y fecha para cada país, así como los diferentes calendarios existentes. Por ejemplo, el formato de fecha habitual en EE.UU. es especificar mes/día/año (10/12/2007), mientras que en España lo habitual es el formato día/mes/año (12/10/2007). 
+
+\item La adaptación de formatos de número y separadores. Mientras que en inglés los números decimales se representan mediante un punto, en español se utiliza una coma. Así 225.32 en inglés se representa como 225,32 en español.
+
+\end{itemize}
+
+\ebOpage{introcolor}{0.25}{EN LA PRÁCTICA}
+
+\begin{itemize}
+\item La adaptación de formatos de moneda. De nuevo, en la mayoría de
+los países anglosajones el símbolo que representa la moneda del país
+se sitúa antes de la cifra unido a ésta sin espacios (£225.32). Lo
+correcto en castellano es que el símbolo vaya después de la cifra
+separado por un espacio en blanco (225,32 \textgreek{\euro}).
+
+\item La representación de las horas también es otro factor que suele generar serios problemas en la localización de software. Aunque cada vez más se tiende a utilizar el formato inglés a.m. y p.m. lo correcto en español es el uso del formato de 24 horas seguido de h.
+
+\item La correcta adaptación de las fórmulas de cortesía. Bien conocida es la tendencia de los países anglosajones y latinoamericanos en el uso de fórmulas de cortesía del tipo Dr., Ing., etc.
+
+\item Los formatos de dirección son otro aspecto de vital importancia tanto en aplicaciones de software tradicionales como en las aplicaciones web. Con mucha frecuencia nos encontramos campos del tipo Estado/Condado, o códigos postales que no permiten la introducción de los formatos propios del país, etc. 
+
+\item Asimismo, la localización dentro de un mismo idioma pero a sus diferentes variantes es esencial para evitar la alienación de los usuarios de cada país/cultura destino. Todos sabemos bien que mientras en España se usan ordenadores no así en Argentina, Colombia, etc. donde lo habitual es utilizar computadores. Esta situación es también similar entre el inglés de América, Reino Unido, Australia, Sudáfrica, etc.
+\end{itemize}
+
+Así pues, un localizador o localizadora es algo más que un simple
+traductor. Podría argumentarse que estos mismos principios son
+igualmente aplicables a la traducción; no obstante, estos se limitan
+exclusivamente a la única lengua de destino con que los traductores
+suelen trabajar, mientras que en la localización el abanico de idiomas
+y culturas destino es mucho más amplio.  
+
+Junto a esta apreciación cultural, un buen localizador o localizadora
+debe asimismo poseer conocimientos relativamente genéricos en
+programación y otros aspectos técnicos, que le ayudarán enormemente a
+la hora de detectar problemas en la localización.  
+
+
+
+Lamentablemente, pese a vivir en los tiempos que corren la mayoría de
+las aplicaciones se desarrollan desde un principio sin previsión ni
+preparación alguna para su adaptación a otros mercados lo que
+dificulta enormemente su posterior localización. Cuatro de los
+aspectos fundamentales que causan problemas a la hora de realizar el
+proceso de localización son la codificación dura (hard coding) de las
+cadenas de texto, la falta de espacio suficiente para garantizar la
+correcta visualización de la traducción de las cadenas de texto (en
+términos generales los textos traducidos al castellano son un 20\% más
+largos que el texto original en inglés) y la concatenación de cadenas de
+texto así como el uso variables. Estos problemas podrían evitarse
+fácilmente con el consiguiente ahorro de tiempo, esfuerzo y dinero si
+existiese desde un principio claridad en los objetivos empresariales a
+la hora de iniciar un proyecto determinado.  
+
+\sectiontext{white}{black}{DIFICULTADES EN EL PROCESO DE LOCALIZACIÓN }
+
+Si nos internamos en las profundidades de la propia traducción de las
+cadenas de texto que componen una aplicación de software, el
+localizador o localizadora se enfrenta al problema de la falta de
+contexto. Al afrontar una traducción (en el sentido tradicional del
+concepto) el traductor dispone de un contexto e información tanto
+previa como posterior que el texto le facilita. En el caso de la
+traducción de aplicaciones de software esto, salvo contadas
+excepciones, es pura utopía. Incluso en aquellos casos en que es
+posible la introducción de campos de comentarios para facilitar el
+proceso de traducción (como es el caso de .NET, Passolo y algún otro)
+estas ayudas a la traducción no suelen llegar al traductor responsable
+de la localización de esa aplicación específica.  
+
+\end{multicols}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=18cm,angle=0]{images/trujamana/image1-crop.eps}
+
+{\small\bf Figura 1. Comentario en .Net.}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+
+
+\msection{introcolor}{black}{0.25}{EN LA PRÁCTICA}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=16cm,angle=0]{images/trujamana/image2-crop.eps}
+
+{\small{\bf Figura 2. Ejemplo de cómo usar el campo de comentarios en Passolo \\para confirmar la traducción elegida.}}
+\end{figure}
+
+\begin{multicols}{2}
+
+
+Como resultado en ocasiones nos encontramos ante traducciones
+incorrectas y los usuarios nos sorprendemos ante el hecho de que se
+haya podido traducir un término de determinada manera cuando resulta
+evidente que es incorrecto. Éste es el caso del ejemplo a continuación
+tomado del último proyecto de localización en el que he trabajado.  
+
+En el ejemplo que se ilustra se muestra claramente la confusión que
+puede generar la traducción de una cadena sin disponer de su contexto
+en la aplicación. Aquí la traducción del inglés ``languages'' se
+prestaba a una traducción incorrecta debido a la propia naturaleza de
+la aplicación, una herramienta para la comparación de archivos de
+recursos creados en diversos lenguajes de programación. 
+
+{\scriptsize
+\begin{verbatim}
+IDD_OpenFileWithEncoding DIALOGEX 0, 0, 285, 33
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | WS_CHILD | \
+                   WS_VISIBLE | WS_CLIPSIBLINGS
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+  LTEXT           "&Encoding:",IDC_EncodingLabel,5,2,42,8
+  COMBOBOX        IDC_Encodings,53,0,150,135,CBS_DROPDOWNLIST |\
+                                      WS_VSCROLL | WS_TABSTOP 
+  PUSHBUTTON      "Open from URL...",IDC_OpenUrl,211,0,62,14,\
+                                     NOT WS_VISIBLE
+  CONTROL         "&Languages",IDC_ShowLanguagesForEncodings, \
+                  "Button",BS_AUTORADIOBUTTON | \
+                  WS_GROUP,53,17,51,10
+  CONTROL         "&Codepages",IDC_ShowCodepagesForEncodings, \
+                  "Button",BS_AUTORADIOBUTTON,107,17,52,10
+END
+\end{verbatim}
+}
+
+¿Cómo determinar si la traducción correcta en castellano debe ser ``idioma'' o ``lenguaje''? ¿Se refiere la cadena a un idioma humano o a un lenguaje de programación?
+
+Afortunadamente, al tratarse de una aplicación pequeña que permite su instalación en el ordenador del usuario, logramos resolver la diatriba simplemente buscando la instancia de esa cadena en la propia aplicación.
+
+Sin embargo, esto no siempre resulta posible ya que en ocasiones no es
+factible instalar la aplicación para aclarar la duda directamente,
+debido a los requisitos de hardware o cuando se trata de aplicaciones
+cliente servidor. En estos casos es únicamente el programador que ha escrito esa cadena quien puede colaborar con el localizador y arrojar luz para resolver la cuestión. Una comunicación interdepartamental fluida puede reducir considerablemente el tiempo de desarrollo de las aplicaciones además de proporcionar un resultado con una calidad claramente mejorada. De lo contrario el localizador se enfrenta a un escollo insalvable y la única opción disponible es aventurarse con una traducción para empezar a rezar a continuación. 
+
+\end{multicols}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=16cm,angle=0]{images/trujamana/image3.eps}
+
+{\small{\bf Figura 3. Ejemplo de traducción del término original ``languages'' en un contexto particular dentro de la aplicación.}}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+\bOpage{introcolor}{0.25}{EN LA PRÁCTICA}
+
+Las traducciones incorrectas debido a situaciones similares a la del ejemplo abundan. 
+He aquí un par de muestras tomadas de la localización de juegos: 
+
+``Complete'': ¿Cómo traducirlo? Puede indicar que se ha superado un objetivo, un nivel o una misión determinada, o puede ser una instrucción (completar).
+``All'': Según a lo que se refiera será ``todo, todos, todas''
+
+\begin{entradilla}
+{\em La {\color{introcolor}concatenación de cadenas de caracteres en
+los programas} puede dificultar el proceso de localización}
+\end{entradilla}
+
+Otros ejemplos resultado de la falta de previsión para la
+internacionalización de los productos son la concatenación de cadenas
+y el uso de variables. A continuación se incluye una muestra de las
+hojas de cálculo utilizadas habitualmente por los localizadores para
+solicitar la aclaración de dudas. Estos ejemplos, están tomados
+también de uno de mis proyectos de localización más recientes (ver tabla al final de esta página).  
+
+Podemos verlo aún más claro en dos ejemplos ficticios tomados de Internet uno de variables y otro de concatenación en la localización de videojuegos para ilustrar este concepto.
+
+En la cadena ``John plays for \verb!{TEAM_NAME}!.'' como se puede deducir, la variable es el nombre de un equipo de fútbol de la liga española. ``John juega en el \verb!{TEAM_NAME}!'' es una traducción válida si el equipo es el Betis, por ejemplo. Pero ¿y si resulta que John juega en la Real Sociedad? ``John juega en el \verb!{REAL SOCIEDAD}!''. Como siempre el problema de género nos juega una mala pasada, algo que no ocurre en inglés al ser un idioma mucho más sintético. Como siempre con un poco de imaginación y recursos se puede encontrar una solución factible del tipo: ``John juega en el equipo: \verb!{TEAM_NAME}!''. 
+
+Veamos un ejemplo de problemas de concatenación en las siguientes cadenas:
+
+\bigskip
+
+{\small
+\begin{tablehere}
+\begin{tabular}{cll}
+\hline
+1 &	Player \%s wins a &	El jugador \%s consigue una \\
+2 &	Red	& roja \\
+3 &	Yellow	& amarilla \\
+4 &	Green	& verde \\
+5 &	Motorcycle &	moto \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+
+\bigskip
+
+Si no se indica al traductor que la cadena 1 va a ir unida a la cadena 2, 3 ó 4 y luego a la 5, ``red, yellow, green'' podrían traducirse en masculino o femenino. Si sabemos que estos adjetivos acompañan a ``motorcycle'' ya sabemos que irán en femenino. 
+
+Durante el juego, el jugador realiza una acción y es premiado con una moto verde. El programa une entonces las cadenas de la siguiente forma: 1 + 4 +5:
+
+El resultado en inglés:
+
+{\small
+\begin{quote}
+``Player \%s wins a green motorcycle.''
+\end{quote}
+}
+
+El resultado en español:
+
+{\small
+\begin{quote}
+``El jugador \%s consigue una verde moto.''
+\end{quote}
+}
+
+Lo que el jugador puede interpretar como una ``mala traducción'' es en realidad un problema de internacionalización. 
+
+\end{multicols}
+
+
+\begin{table}[ht]
+{\scriptsize
+\begin{tabular}{p{2.5cm}p{1.5cm}p{3.5cm}p{4cm}p{1.3cm}p{1.9cm}}
+\hline
+{\bf Resource ID} & {\bf String ID} & {\bf English text}
+ & {\bf Query} & {\bf ACCT Subject (Yes/No)} & {\bf Category} \\
+\hline
+000000067 .ProgramCurrentCostMetricsHelp.jsp & 68 & Filters for Programs or Projects where the actual costs are greater than the earned value by the specified dollar amount. & Should dollars be replaced with euros? & No & symbols \\
+\hline
+
+000000062. RequestSummaryBarChartHelp.jsp & 191 & \# of Requests & Could you confirm that '\#' means number and whether it would be okay to use the Spanish equivalent symbol º? & No &Convention \\
+\hline
+000000050. KPMXresourcesproperties/49 & CREATED\_ RESOLVED.TXT & created and resolved per &
+Please clarify what follows after this option in order to translate correctly. & No & String not completed \\
+\hline
+000000033. KEXPtResourcesproperties/1574 & RED\_ EXCEPTION.TXT & of Tasks must have Exceptions to turn the Project Health & Please clarify what precedes and follows this string: i.e. is there a percentage value ``\%'' before ``of tasks''? Also, does a condition color follow ``Project Health''? & No & \\
+\hline
+000000012. WorkPlanResources\_en.properties/239 & warning. ActualsStartWarning warning. ActualsFinishWarning & 
+\{0\} constraint \{1\} cannot be satisfied because the constraint date \{2\} is \{3\} than the Actual Start Date for the task \{4\}. The Actual Start Date takes precedence and is reflected in the Scheduled Start Date.\verb!<br><b>Resolution:</b>! If the Actual Start Date is in error, correct it and reschedule. Otherwise, changing or removing the constraint definition so that it does not conflict with the Actuals date will eliminate this warning. & 
+I need to know what variables {0}, {1}, {3} and {4} will be replaced with in order to translate correctly. & No & Variables \\
+\hline
+
+\end{tabular}
+}
+\end{table}
+
+\clearpage
+\pagebreak
+
+\bOpage{introcolor}{0.25}{EN LA PRÁCTICA}
+
+En ocasiones la aparición de una traducción incorrecta o fuera de
+contexto se debe a situaciones como las descritas anteriormente pero, en
+otras ocasiones, se deben a la automatización de los procesos de
+traducción como es el caso del uso de las herramientas y memorias de
+traducción. ¡Atención a este punto! Hablamos de herramientas de
+traducción y no de traducción automática, dos conceptos diametralmente
+diferentes.   
+
+\sectiontext{white}{black}{TRADUCCIÓN AUTOMÁTICA}
+
+El concepto de traducción automática no requiere mayor explicación ya
+que es ampliamente conocido por todos. Y abundan los ejemplos de
+traducciones atroces realizadas mediante todo tipo de ``artilugios''
+informáticos, del tipo Bable Fish, etc. Ni que decir tiene que aunque
+cada vez este tipo de aplicaciones están más y mejor desarrolladas,
+los resultados generados no pueden equipararse a la traducción humana
+a ningún nivel. Aunque es cierto que en determinados contextos pueden
+resultar útiles para algunos usuarios al ayudarles a captar la idea
+general de un texto, no pueden considerarse traducciones propiamente
+dichas. Por eso no nos extenderemos más en su tratamiento. 
+
+
+\sectiontext{white}{black}{HERRAMIENTAS Y MEMORIAS DE TRADUCCIÓN}
+
+Volviendo al punto de las memorias de traducción. Éste es, de por sí,
+un tema lo suficientemente extenso como para escribir uno y muchos más
+artículos sobre él. Para los no expertos en la materia: las
+herramientas de traducción asistida (generalmente conocidos en sus
+siglas en inglés como herramientas o aplicaciones CAT o Computer
+Assisted Translation) son aplicaciones de software cuya finalidad es
+la de asistir al traductor ``humano'' durante el proceso de
+traducción; una memoria de traducción es básicamente una base de datos
+usada por las herramientas CAT específicas diseñadas para ayudar a los
+traductores ``humanos''. Estas bases de datos contienen los segmentos
+de texto en el idioma origen junto con su traducción a uno o varios
+idiomas. Se diferencian de las bases de datos terminológicas en que
+suelen contener bloques de texto, párrafos, oraciones y frases,
+mientras que las otras contienen únicamente palabras o términos. 
+
+\myfig{0}{images/trujamana/image4.eps}{1}
+{\footnotesize{\bf Figura 4: Base de datos terminológica Multiterm 5.0}}
+
+
+\myfig{0}{images/trujamana/image5.eps}{1}
+{\footnotesize{\bf Figura 5: Memoria de traducción Trados Workbench
+ 6.5 con los segmentos guardados.  }}
+
+\bigskip
+
+Las herramientas CAT y las memorias de traducción representan una
+ayuda valiosísima a la tarea del traductor o localizador, ya que
+permiten reutilizar los segmentos coincidentes que hayan sido
+traducidos previamente. Ello supone un considerable ahorro de tiempo
+además de contribuir a mantener la consistencia en la traducción de
+los términos más habituales específicos de un determinado proyecto.  
+
+\begin{entradilla}
+{\em Las {\color{introcolor} memorias de traducción son una herramienta} imprescidible}
+\end{entradilla}
+
+El proceso es simple. A grandes rasgos y generalizando un poco, ya que
+cada herramienta presenta peculiaridades específicas en su
+funcionamiento, se puede decir que funcionan del siguiente modo. El
+traductor abre el documento que va a traducir en la herramienta CAT
+(algunas usan su propia interfaz mientras que otras se integran e
+interactúan con procesadores de texto del tipo MS Word) y procede a
+escribir la traducción para cada segmento que aquélla abre. Cada vez
+que se cierra o se guarda un segmento, la herramienta de traducción
+almacena el texto en el idioma original con su traducción
+correspondiente en la memoria. A medida que se avanza en la
+traducción, la herramienta CAT junto con la memoria de traducción
+mostrará al traductor los segmentos coincidentes que se hayan
+traducido anteriormente, bien en un 100\% de concordancia o en
+porcentajes inferiores, para reutilizarlos. Asimismo, permiten
+realizar búsquedas específicas de términos frecuentes entre todos los
+segmentos traducidos almacenados en la memoria. La herramienta de
+traducción define cada segmento que se traduce de acuerdo con las
+definiciones proporcionadas por el usuario. La gran mayoría de ellas
+usan los signos ortográficos como marcadores de segmentos, es decir,
+puntos, puntos y comas, etc. 
+
+
+
+\end{multicols}
+\clearpage
+\pagebreak
+
+
+\msection{introcolor}{black}{0.25}{EN LA PRÁCTICA}
+
+\vspace{1cm}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=17cm,angle=0]{images/trujamana/image6.eps}
+
+{\small{\bf Figura 6. Ejemplo de traducción del término original ``languages'' en otro contexto diferente dentro de la misma aplicación. }}
+\end{figure}
+
+
+\begin{multicols}{2}
+
+
+
+Algunas de estas herramientas también ofrecen la posibilidad de
+procesar el documento para realizar una pretraducción usando los
+segmentos almacenados en la memoria de traducción. Esta pretraducción
+podrá hacerse también de acuerdo con los criterios de concordancia
+establecidos. Así podrán usarse concordancias del 100\% o en franjas
+de porcentajes inferiores.  
+
+Muchas también ofrecen la posibilidad de trabajar individualmente o
+conectados en red compartiendo los contenidos almacenados en las
+memorias entre varios traductores. 
+
+Como puede verse, las memorias de traducción suponen un excelente
+reaprovechamiento de recursos y garantizan un mayor grado de
+coherencia interna de la terminología. No obstante, no están exentas
+de riesgo. En relación a lo que decíamos anteriormente, una misma
+cadena puede ser utilizada en un contexto diferente con un significado
+totalmente distinto, tal como se ilustra en la Figura 6. Es evidente que la traducción del término ``languages''
+aquí no podría ser nunca la misma que la que se mostraba en uno de los
+ejemplos anteriores, aunque ambos están extraídos de la misma
+aplicación. 
+
+
+
+Esto resulta particularmente relevante cuando, por ejemplo, varios
+traductores están trabajando compartiendo en red una misma memoria
+global de traducción para un mismo cliente. Mientras que unos están
+realizando la traducción de las cadenas de software, otros están
+trabajando en los materiales colaterales (manuales de usuario,
+manuales técnicos, marketing, etiquetado y empaquetado, intranet,
+etc.). Incluso en estos casos aunque existan concordancias del 100\%,
+la traducción no tiene por qué ser necesariamente igual. 
+
+\begin{entradilla}
+{\em Las memorias de traducción facilitan {\color{introcolor}la coherencia interna de la
+terminología} }
+\end{entradilla}
+
+Lo que es
+más, probablemente no deberían ser iguales puesto que, por ejemplo,
+las terminaciones de los verbos en -ing del inglés podrán traducirse
+como un infinitivo en las cadenas de código de la aplicación pero como
+un sustantivo o incluso como una frase fórmula del tipo ``Cómo...'' en
+manuales de usuario o materiales de marketing. 
+
+\begin{entradilla}
+{\em Una misma cadena puede ser utilizada en {\color{introcolor}un contexto 
+diferente con un significado} totalmente diferente}
+\end{entradilla}
+
+Otros ejemplos de diferentes usos dependiendo del ámbito de uso:  
+
+\bigskip
+
+\begin{tablehere}
+{\scriptsize
+\begin{tabular}{|p{2cm}p{2.5cm}p{2.5cm}|}
+\hline
+Texto Origen & Traducción para Documentación & Traducción para Software \\
+\hline
+Printing a range and a Graph &
+Impresión de un intervalo y de un gráfico o Cómo imprimir un intervalo
+y un gráfico &
+Imprimir un intervalo y un gráfico \\
+\hline
+Delete Links & Supresión de enlaces o Cómo... & Suprimir enlaces \\
+\hline
+Apply symbols & Aplicación de los símbolos o Cómo... & Aplicar
+símbolos \\
+
+\hline
+\end{tabular}
+}
+\end{tablehere}
+
+\bigskip
+
+Por ello, es esencial disponer de los medios (bien sea mediante la
+instalación de la aplicación o la colaboración con los programadores
+responsables o el personal de marketing) para garantizar que una
+cadena de texto determinada es apropiada en el contexto en el que va a
+aparecer.  
+
+Este aspecto es de particular relevancia ya que durante la fase de
+testing o de control de calidad existe un probabilidad muy alta
+de que pase desapercibido puesto que este tipo de tareas, por lo
+general, suelen estar desempeñadas por testers que no hablan el idioma
+o idiomas a los que se ha traducido la aplicación.  
+
+
+\eOpage
+
+\rput(9.0,-23.7){\resizebox{!}{7.2cm}{{\epsfbox{images/trujamana/image8.eps}}}}
+
+\bOpage{introcolor}{0.25}{EN LA PRÁCTICA}
+
+\sectiontext{white}{black}{EMPRESAS LÍDERES DEL MERCADO}
+
+Evidentemente, dependiendo de la herramienta utilizada, la facilidad o
+dificultad para identificar y procesar estas cadenas variará de forma
+considerable. En la actualidad, podría decirse que el líder del
+mercado para la traducción general así como para la localización de
+software comercial es SDL Trados, seguido de Transit y DejaVu. En un
+ámbito más técnico se encontrarían Catalyst y Passolo. Como nota de
+interés, la mayoría de estas aplicaciones son desarrolladas por
+empresas alemanas.  
+
+\begin{tablehere}
+{\scriptsize
+\begin{tabular}{|p{2.0cm}|p{1.1cm}p{0.9cm}p{0.9cm}p{0.9cm}|}
+\hline
+   & Atril  Deja-Vu X & TRADOS 7 & STAR Transit XV & SDL  Translation Suite 2006 \\
+\hline
+Ayuda al traductor & & & &  \\
+\hline
+Revisor ortográfico  & Sí & Sí & Sí & Sí \\
+Tesauro & Sí & Sí & No & No \\
+Glosario & Sí & Sí  & Sí &  Sí \\
+BD terminológica & Sí & Sí & Sí & Sí \\
+Diccionarios & Sí & Sí & Sí & Sí \\
+Interfaz de traducción propia & Sí & Sí & Sí & Sí \\
+Alineación  & Sí  & Sí & Sí & Sí \\
+Extracción de términos  & No & Sí & No & No \\
+Interfaz de TA & No & No & Sí & Sí \\
+\hline
+Tipos de archivo & & & & \\
+\hline
+DLL, EXE & No & Sí & No & No \\
+Excel & Sí & Sí & Sí & Sí \\
+PowerPoint & Sí & Sí & Sí & Sí \\
+RC & Sí & Sí & Sí & Sí \\
+RTF (Win Help) & Sí  & Sí & Sí & Sí \\
+RTF (Texto) & Sí & Sí & Sí & Sí \\
+TXT & Sí & No & Sí & Sí \\
+DOC & Sí & Sí & Sí & Sí \\
+Framemaker & Sí & Sí & Sí & Sí \\
+PageMaker & No & Sí & Sí & Sí \\
+HTML & Sí & Sí & Sí & Sí \\
+\hline
+Reutilización & & & & \\
+\hline
+Coincidencias parciales & Sí & Sí & Sí & Sí \\
+Coincidencias idénticas & Sí & Sí & Sí & Sí \\
+De mismo tipo de objeto & Sí & No & No & No \\
+Basado en frases & Sí & Sí & Sí & Sí \\
+Basado en párrafos & Sí & Sí & Sí & Sí \\
+
+\hline
+\end{tabular}
+}
+\end{tablehere}
+
+{\footnotesize\bf Fuente: www.traductores.org.ar}
+
+\bigskip
+\columnbreak
+
+Por supuesto, en el ámbito de software libre también existen
+aplicaciones equivalentes como, por ejemplo, OmegaT. Así mismo y
+aunque no encuadradas bajo el grupo de herramientas CAT también
+existen bibliotecas de software del tipo de gettext que facilitan la
+tarea de localización de aplicaciones. 
+
+
+
+\sectiontext{white}{black}{RETOS DEL LOCALIZADOR}
+
+La labor del localizador de software es silenciosa pero omnipresente
+en la actualidad. En su trabajo diario se enfrenta a numerosos retos y
+dificultades inherentes a la naturaleza de este trabajo. Puesto que el
+lenguaje evoluciona a una velocidad vertiginosa particularmente en el
+ámbito de la informática mediante la introducción de neologismos, el
+traductor/localizador debe tener una clara conciencia de su labor como
+lingüista además de como experto en otros aspectos más especializados
+del proceso de localización. Por ello, para ser un buen localizador no
+basta con ser un buen traductor. Además de ser un maestro del lenguaje
+también hay que poseer excelentes aptitudes técnicas y un gran
+entusiasmo, porque localización es el arte de la traducción convertido
+en ciencia.   
+
+
+
+Y eso es algo que el localizador debe aprender mediante una sólida
+formación académica y amplia experiencia en el ámbito laboral, ya que
+no es algo que necesariamente venga predeterminado (del inglés {\em by
+default} que no por defecto!!...)
+
+\begin{center}
+\colorbox{excolor}{
+\begin{minipage}{.98\linewidth}
+{\bf\sf\Large Sobre la Autora}
+\vspace{1mm}
+\hrule
+\bigskip
+\small
+
+Silvia Carril Caldelas es licenciada en Traducción e Interpretación por la
+Universidad de Vigo. Desde 1997 trabaja como especialista en localización de
+software para empresas tanto del Reino Unido como de España. Actualmente es
+la directora de ilia, compañía británica especializada en la localización y
+desarrollo de software. 
+
+{\tt silvia@ilialang.com // www.ilialang.com}
+
+\bigskip
+
+\end{minipage}
+}
+\end{center}
+
+\normalsize
+\raggedcolumns
+
+
+
+\end{multicols}
+\begin{center}
+Fig. 8: Volcado de pantalla de Catalyst 7.0
+\end{center}
+
+\clearpage
+\pagebreak

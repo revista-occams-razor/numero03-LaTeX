@@ -1,0 +1,608 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Tecnología
+%
+% Incluye imagen del artículo
+
+\rput(2,-2.3){\resizebox{!}{4.7cm}{{\epsfbox{images/iris/iris_white.eps}}}}
+
+
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{TECNOLOGÍA}
+
+\mtitle{10cm}{Reconocimiento Biométrico a través del Iris}
+
+\msubtitle{12cm}{Aprendemos como funciona la última tecnología de
+control de acceso}
+
+{\sf por Fernando Martín Rodríguez}
+
+
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+\intro{introcolor}{B}{ueno... aquí estoy de nuevo intentando continuar
+lo que empecé (una serie de artículos sobre biometría). Vaya por
+delante que empecé por las huellas porque era de lo que controlaba
+algo. Ahora estoy pisando terreno un poco pantanoso. Lo bueno es que
+escribir esto me va a obligar a buscar información sobre el tema y con
+eso aprenderemos todos.}
+
+
+ Hoy veremos cómo se puede hacer reconocimiento
+biométrico utilizando el dibujo (o patrón) que todos tenemos en el
+iris del ojo. ¡¡¡Ojo (valga la redundancia) !!! No confundáis el iris
+con la retina; no lo digo por dar una lección de anatomía, sino porque
+la retina también es un rasgo biométrico empleado en algunos sistemas
+(de hecho, es muy fiable, el problema es encontrar una cámara capaz de
+fotografiar dentro del ojo). Como todos sabemos, el iris es la parte
+externa y coloreada del ojo (la que hace que tengamos los ojos verdes,
+azules o castaños). 
+
+
+
+\sectiontext{white}{black}{INTRODUCCIÓN}
+
+Empecemos recordando las características que un rasgo debe cumplir
+para dar lugar a un buen sistema biométrico. Eran las siguientes: 
+
+\begin{itemize}
+\item {\bf Universalidad}: todas las personas deben poseer ese rasgo.
+\item {\bf Unicidad}: no debe haber dos personas con los rasgos seleccionados iguales.
+\item {\bf Permanencia}: deben ser invariantes con el tiempo.
+\item {\bf Cuantificación}: admiten medidas cuantitativas.
+\end{itemize}
+
+Si en el artículo anterior veíamos que las huellas dactilares son el
+rasgo que mejor cumple estas características, podemos decir que el
+Iris las sigue a poca distancia. El dibujo del Iris está completo
+aproximadamente a los 18 meses de edad y permanece inalterable toda la
+vida (aclaración: el ``dibujo'' es constante, el color no se
+estabiliza del todo hasta la pubertad y con la vejez se puede perder
+un poco de coloración; el reconocimiento de iris no se puede basar en
+el color). Al igual que ocurre con las huellas dactilares, dos gemelos
+idénticos (con el mismo ADN) tendrán iris diferentes. 
+
+\myfig{0}{images/iris/image1.eps}{0.5}
+\begin{center}
+{\footnotesize{\bf Figura 1. Imagen de un iris humano.}}
+\end{center}
+\bigskip
+
+El reconocimiento automático a partir del iris no es tan popular en
+sistemas de seguridad como el de huellas debido a la relativa
+incomodidad de captación para el usuario (además, las huellas han sido
+mucho más estudiadas debido a sus aplicaciones legales). Sin embargo,
+si la imagen es captada con suficiente calidad, las tasas de
+reconocimiento llegan a ser superiores a las de huellas. Otra de las
+razones de su falta de popularidad es que el primer y mejor algoritmo
+de extracción y comparación de características de iris, debido a John
+Daugman, está patentado en Estados Unidos y licenciado sólo a algunos
+fabricantes de sistemas biométricos. 
+
+\end{multicols}
+
+{\colorbox{excolor}{
+\begin{minipage}{0.98\linewidth}
+{\footnotesize\sf
+{\textbf{\normalsize{ Las patentes de software}}}-
+
+\medskip
+
+Supongo que sabéis que Estados Unidos permite patentar software (y
+muchas otras cosas: algoritmos, fórmulas, estrategias de marketing
+...). En resumen, permiten patentar ideas (en Europa sólo se permitía
+patentar dispositivos físicos, esto es: cacharros). 
+
+Pensad que las patentes han sido un gran instrumento: patentar un
+invento obliga a publicarlo, la patente dura 20 años que es el margen
+de beneficio del inventor (nadie puede fabricar sin pagarle derechos)
+pero después pasa a formar parte del dominio público. Sí, sí, nadie
+obliga a patentar pero si la competencia logra reproducir el producto
+y lo patenta antes, será el inventor el que tenga que pagar. 
+
+Yo (y muchos) siempre hemos pensado que una cosa es patentar el tubo
+trinitron, el transistor o un tipo de antena y otra es permitir
+patentar hasta la más mínima idea. Imaginaos que pasaría si alguien
+patentara el bucle for, el contador, el fichero.... La no existencia
+de patentes sobre el software permite la existencia de pequeñas
+empresas innovadoras que de otro modo podrían verse ahogadas por el
+pago de cánones o de gastos legales (cada nuevo producto obliga a un
+estudio de las posibles patentes infringidas). 
+
+Fijaos que dije que en Europa no se ``permitía'' patentar
+ideas. Existe desde hace tiempo cierto movimiento que presiona al
+parlamento europeo para copiar aquí la ley norteamericana. De momento,
+no lo han conseguido (la propuesta se ha rechazado dos veces). Podéis
+informaros más sobre este tema en la dirección:
+
+http://lpf.ai.mit.edu/Patents/patents.html.
+}
+\end{minipage}
+}}
+
+\normalsize
+
+
+\clearpage
+\pagebreak
+
+
+
+\msection{introcolor}{black}{0.25}{TECNOLOGÍA}
+
+
+\begin{table}[ht]
+{\footnotesize
+\begin{tabular}{|p{1.6cm}|p{0.8cm}|p{0.8cm}|p{1.5cm}|p{1.7cm}|p{1.7cm}|p{1.7cm}|p{1.7cm}|p{1.7cm}|}
+\hline
+Indicador biométrico & TFR & TFA & Memoria (bytes) & Tiempo respuesta
+& Variabilidad intra-clase & Variabilidad inter-clase & Implantación
+en mercado & Facilidad  de engaño\\
+\hline
+Huellas & 3\% & $1 : 1 ^6$ & 100-1000 & Depende del sistema & Media & Alta &52\% & Media \\
+\hline
+Retina & Bajas & aprox. 0\% & Poca & Bastante bajo & Muy baja & Muy alta & <1\% & Baja \\
+\hline
+Iris & Bajas & aprox. 0\%  & 1024 bits & Medio-bajo & Muy baja & Muy alta & 7,3\% & Baja \\
+\hline
+Cara & Bajas & Bajas & >10,000  & Alto(1:N)  Bajo (1:1) & Muy alta & Alta & 11,4\% & Muy alta\\
+\hline
+Voz & Bajas & Bajas & >1000 & Alto (1:N)  Bajo (1:1) & Alta & Media-alta & 4,1\% & Muy alta \\
+\hline
+
+
+\end{tabular}
+}
+\end{table}
+\begin{center}
+{\textbf {Tabla 1: Principales características de algunos indicadores biométricos.}}
+\end{center}
+
+
+ \begin{multicols}{2}
+
+Para terminar la introducción, os vamos a obsequiar con un cuadro
+comparativo de los diferentes sistemas biométricos (sí, sí, tal vez
+esto debería haber ido en el primer artículo de la serie). La columna
+TFA significa ``Tasa de Falsa Aceptación'' y es el porcentaje de veces
+que el sistema declara como iguales a dos individuos que no lo son. La
+TFR es la ``Tasa de Falso Rechazo'' y es el porcentaje de veces que
+dos individuos iguales son erróneamente considerados
+diferentes. Normalmente, se considera que la falsa aceptación es peor
+que el falso rechazo, aunque eso siempre depende de la aplicación. 
+
+\begin{entradilla}
+{\em Comparado con otros métodos de reconocimiento biométrico,
+{\color{introcolor}el análisis del iris} resulta una técnica muy fiable}
+\end{entradilla}
+
+La variabilidad intra-clase es la variación entre diferentes tomas de
+un rasgo para el mismo individuo. Por ejemplo, la cara es muy variable
+porque depende mucho del gesto, la posición ante la cámara, los
+cambios naturales debidos al paso del tiempo y otras circunstancias
+difíciles de controlar (afeitado o no, gafas, peinado...). Un rasgo es
+más adecuado cuando la variabilidad intra-clase es baja y la
+variabilidad inter-clase (las diferencias con otros individuos) es
+alta. 
+
+A partir de la tabla vemos que las huellas, el iris y la retina son
+rasgos muy fiables, mientras que la cara y la voz no lo son tanto. 
+
+\columnbreak
+
+\begin{entradilla}
+{\em El iris contiene un {\color{introcolor}complejo patrón de
+líneas que se entrecruzan} formando una textura}
+\end{entradilla}
+
+\sectiontext{white}{black}{TÉCNICAS DE RECONOCIMIENTO}
+
+El iris contiene un complejo patrón compuesto por un conjunto de
+líneas que se entrecruzan formando una textura compleja. En procesado
+de imagen se habla de texturas cuando tenemos un patrón subyacente a
+una imagen donde no hay contornos claros que definan objetos pero sí
+muchas líneas entrecruzadas o no. Son ejemplo de texturas la huellas
+dactilares, las vetas naturales que se observan al fotografiar un
+trozo de madera, los hilos que forman una tela (fotografiada de
+cerca)... La textura de un iris humano tiene una enorme variabilidad
+entre individuos e incluso entre los dos ojos del mismo individuo. 
+
+
+Las técnicas de identificación mediante análisis del iris comprenden
+los siguientes pasos:
+
+\begin{itemize}
+\item {\bf Captura}: para una buena captura se requiere iluminar el iris
+mediante una fuente en el infrarrojo cercano. Así se consigue no
+molestar al usuario. Esta iluminación permite capturar los detalles
+del patrón en iris muy oscuros. La información de color no se utiliza
+(se utilizan cámaras blanco y negro o se convierte la imagen a escala
+de grises).  
+
+\end{itemize}
+
+\end{multicols}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=17cm,angle=0]{images/iris/figura2.eps}
+
+{\small\bf Figura 2. Segmentación, transformación polar e igualación de histograma del iris de la izquierda.}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+
+\bOpage{introcolor}{0.25}{TECNOLOGÍA}
+
+\begin{itemize}
+
+\item {\bf Segmentación}: los objetivos a lograr son la localización del
+centro, eliminación de la pupila y la esclerótica. Para hacer esto se
+suele utilizar el hecho de que la pupila es negra y la esclerótica
+blanca (figura 2, izquierda), mientras que el iris ocupa una tonalidad
+intermedia. Ojo: todos los que hayan estudiado procesado de imagen
+alguna vez saben que nunca es tan fácil como decir, esto es negro,
+aquello blanco... Estamos tratando con imágenes que tienen 256 niveles
+de gris y lo primero que haremos será establecer dos umbrales (blanco
+cuando el píxel tiene un valor>u1, negro cuando tiene un
+valor<u2). Con eso deberíamos tener una primera aproximación, esto es:
+un objeto similar a una corona circular que no es blanco ni negro pero
+que está rodeado por un objeto blanco y que rodea a un círculo
+negro. Aplicando un poco de geometría deberíamos lograrlo. Otra fuente
+de información que se puede usar a veces es el hecho de que el iris es
+una zona con color (no sabemos cuál pero tiene una tonalidad) mientras
+que el resto de la foto es gris más claro (hasta el blanco) o más
+oscuro (hasta el negro). A veces, aquí también se puede utilizar
+información de color ya que los puntos del iris tienen una tonalidad
+que su entorno no posee (porque es blanco o negro... en definitiva es
+gris más o menos brillante). 
+
+\item {\bf Transformación polar}: el iris es una corona circular y esa
+no es una forma muy adecuada para trabajar. El objetivo es
+``estirarlo'' para convertirlo en un rectángulo. Para eso haremos una
+transformación de coordenadas: cada punto tendrá dos coordenadas
+polares (ángulo $\theta$ y radio $\rho$). Si representamos de nuevo la
+imagen pero llevando los ángulos al eje x y el radio al eje y
+lograremos un patrón rectangular (figura 2, derecha). 
+
+\item {\bf Normalización}: toda imagen capturada por una cámara está
+sujeta a variaciones de iluminación. Para evitar que eso cause
+problemas debemos transformar la imagen para tener siempre el mismo
+contraste (la diferencia entre el punto más oscuro y el más
+claro). Una de las normalizaciones más utilizadas es la ``igualación
+de histograma'' que consiste en transformar algunos de los niveles de
+gris en otros de forma que el histograma (el número de veces que se
+repite cada nivel) sea casi constante. 
+
+\item {\bf Extracción de características texturales}: ahora se trata de
+convertir la textura en un vector de números. Para eso suelen usarse
+los llamados filtros direccionales. Un ejemplo simple de filtro
+direccional es el gradiente. Aplicándolo en una textura nos daría una
+idea de la dirección de las líneas en cada punto (el vector gradiente
+saldría perpendicular a la dirección dominante). para extraer
+características de texturas se suelen usar los filtros de Gabor. En la
+técnica de Daugman (patentada) se procede a la cuantificación de la
+fase que resulta de la aplicación de filtros Gabor complejos. La fase
+de cada resultado local se codifica con 2 bits y cada iris queda
+codificado con 2048 bits. Otras técnicas utilizan filtros paso-banda
+ligeramente diferentes a los de Gabor y obtienen vectores reales en
+lugar de codificación binaria de la fase. 
+
+\item {\bf Comparación de los vectores codificados}: distancia de Hamming
+(número de bits diferentes) en la técnica de Daugman o distancias
+matemáticas clásicas (euclídea, norma 1, norma 2 ...) en los otros
+casos. 
+
+\end{itemize}
+
+\begin{entradilla}
+{\em El proceso de reconocimiento se reduce finalmente a la
+{\color{introcolor}comparación de los vectores obtenidos tras la cuantificación de la fase}
+del resultado de la aplicación de los filtros de Gabor}
+\end{entradilla}
+
+
+\sectiontext{white}{black}{PARA SABER MÁS}
+
+Sé lo que podéis estar pensando... la explicación anterior tiene una
+``densidad similar al hormigón'', sobre todo para lectores que no
+compartan mi formación (ingeniería de telecomunicación). En
+fin... hablar de procesado de imagen a nivel técnico es lo que
+tiene. Si alguien es ``muy cafetero'' o ``muy masoquista'' puede
+ampliar datos con la siguiente bibliografía: 
+
+\begin{itemize}
+\item En la segmentación hablé de elegir dos umbrales pero no dije
+cómo. Por prueba y error se pueden ajustar umbrales fijos. También se
+puede intentar calcularlos automáticamente. Existen innumerables
+publicaciones sobre cálculo de umbrales. La más clásica es el artículo
+de N. Otsu ``A Threshold Selection Method for Gray Level Histograms''
+(publicado en la revista IEEE Transactions on System, Man and
+Cybernetics en enero de 1979). Una referencia de infinitamente menor
+calado pero que habla de obtener varios umbrales al mismo tiempo es el
+artículo ``Analysis Tools for Gray Level Histograms'' (publicado en el
+congreso SPPRA-2003 en junio de 2003). Sí, sí, una vez más me he
+referenciado a mí mismo (copia en www.gpi.tsc.uvigo.es). 
+
+\item La igualación de histograma y, más en general, el uso de
+histogramas en procesado de imagen es una técnica clásica explicada en
+todos los libros de esta disciplina. Por ejemplo, os recomiendo
+``Fundamentals of Digital Image Processing'' de A.K. Jain
+(Prentice-Hall) o ``Digital Image Processing'' de R.C. González
+(también editado por Prentice Hall). 
+
+\end{itemize}
+
+\ebOpage{introcolor}{0.25}{TECNOLOGÍA}
+
+\begin{itemize}
+\item Para los filtros de Gabor he visto que hay un resumen
+cualitativo correcto en la wikipedia
+({\small \verb!http://es.wikipedia.org/wiki/Filtro_de_Gabor!}). Para mayores
+profundidades hay tutoriales en la red como: 
+\begin{itemize}
+\item {\small \verb!http://mplab.ucsd.edu/wordpress/tutorials!\\\verb!/gabor.pdf!}.
+\item {\small \verb!http://www.cs.rug.nl/~imaging/!\\\verb!simplecell.html!}.
+
+Por cierto, no viene mucho al caso, pero Dennis Gabor también inventó
+los hologramas y recibió por ello el Premio Nobel de física. Además,
+publicó un curiosísimo artículo titulado ``Theory of Communication''
+publicado por el IEEE en 1946 donde se propone una teoría de la
+información diferente a la de Shannon. 
+
+\end{itemize}
+
+\item Queda un poco como el villano de la historia, pero J.C. Daugman
+fue el que resolvió de una vez por todas el problema del
+reconocimiento de iris (lástima que no quisiera compartirlo). Su
+trabajo está descrito en varios artículos. Por ejemplo, éste lo
+escribió él mismo y se puede bajar de internet:
+
+{\small \verb!http://www.argus-solutions.com/pdfs/!\\\verb!recog_persons_iris.pdf!. }
+
+¡¡¡Ojo!!!
+Que esté publicado no quiere decir que se puedan usar sus ideas sin
+pagarle, también está patentado (US Patent No. 4641349), Daugman fundó
+la empresa Iridian Technologies para explotar esta
+patente. Bueno... hasta donde yo sé, si en Europa no hay patentes
+intelectuales podríamos hacer productos usando este algortimo sin
+mayor problema. ¿Algún abogado me puede corregir? A la hora de
+comercializar esos productos en Estados Unidos sí que íbamos a tener
+lío... De todas formas no pienso intentarlo, no vaya a ser que tenga
+que escribir el próximo artículo desde Carabanchel. 
+
+\item En nuestra Escuela algo se ha trabajado sobre este tema. El
+Proyecto Fin de Carrera ``Desarrollo de un Algoritmo de Identificación
+de Personas Mediante su Iris'' consiste en la implementación en matlab
+de un método de reconocimiento (distinto al de Daugman). Su autor es
+Óscar González Rey y su tutor el profesor José Luis Alba Castro. 
+
+\end{itemize}
+
+\sectiontext{white}{black}{ENSUCIÁNDONOS LAS MANOS}
+
+Yo, como todos, tiendo a la ley del mínimo esfuerzo, por eso quería
+dar por terminado este artículo. La dirección de la revista, muy
+sabiamente, me convenció de que trabajara un poco más.... y aquí está
+el resultado. He hecho un pequeño programa en matlab intentando poner
+en práctica parte de lo que os he contado.... A la izquierda el
+código, a la derecha los resultados parciales. ¡¡¡Ojo!!! falta la
+última parte. 
+
+\end{multicols}
+
+
+\begin{multicols}{2}
+
+\lstset{language=Matlab,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+%
+% Extraccion de iris.
+%
+clear;close all; % Limpiar
+fichero = 'Ojo1.jpg'; % Fichero de entrada
+ImOjoRGB = imread(fichero); % Leer imagen
+ImOjoHSV = rgb2hsv(ImOjoRGB); % Pasar a HSV
+ImAux = imcomplement(ImOjoHSV(:,:,3)); % Negativo
+ImDisc1 = ImAux.*ImOjoHSV(:,:,2);
+% Iris = Poca luminacia y mucha saturacion
+umbral = graythresh(ImDisc1);
+% Umbral de saturacion (Otsu)
+Masc0 = im2bw(ImDisc1,umbral); % Mascara previa
+radio = 20;
+ee = strel('disk',radio);
+Masc1 = imopen(imfill(Masc0,'holes'),ee);
+% Limpiar (empezamos eliminando la esclerotica)
+% Ahora vamos a recortar el iris
+[label,num] = bwlabel(Masc1);
+% Etiquetar (separar objetos)
+props = regionprops(label,'basic');
+maxarea = -1;
+idx = -1;
+for i=1:num,
+    % Buscar area maxima
+    area = props(i).Area;
+    if (area>maxarea)
+        maxarea = area;
+        idx = i;
+    end
+end
+Rect = props(idx).BoundingBox;
+IrisRGB = imcrop(ImOjoRGB,Rect);
+IrisHSV = imcrop(ImOjoHSV,Rect);
+ImDisc2 = imcrop(ImDisc1,Rect);
+Masc2 = imcrop(Masc1, Rect);
+% Recortar la zona de interes de cada imagen
+%
+% Ahora eliminar la pupila
+IrisBN = rgb2gray(IrisRGB); % Pasar a B/N
+U1 = 10;
+U2 = 90; % Umbrales <<fijos>>
+Masc3 = roicolor(IrisBN,U1,U2); % Mascara
+
+\end{lstlisting}
+
+
+\columnbreak
+\begin{center}
+\myfig{0}{images/iris/inicial.eps}{0.40}
+\begin{center}
+\begin{spacing}{0.3}
+{\scriptsize Imagen Original}
+\end{spacing}
+\end{center}
+\myfig{0}{images/iris/Fig01.eps}{0.40}
+\begin{spacing}{0.3}
+{\scriptsize {Imagen ``discriminante'': resultado de multiplicar la
+saturación (pureza del color) por el negativo del brillo (el iris
+tiene mucha pureza de color y menos brillo que el resto de la
+imagen).}}
+\end{spacing}
+\myfig{0}{images/iris/Fig02.eps}{0.3}
+\begin{spacing}{0.3}
+{\scriptsize Máscara del iris: se obtiene procesando la imagen anterior. Primero se rellenan las regiones con huecos, se limpia un poco y conservamos la mayor mancha blanca.}
+\end{spacing}
+\myfig{0}{images/iris/Fig03.eps}{0.3}
+\begin{center}
+\begin{spacing}{0.3}
+{\scriptsize Iris recortado: la máscara anterior nos permite eliminar la esclerótica... todavía falta quitar la pupila.}
+\end{spacing}
+\end{center}
+\end{center}
+\end{multicols}
+
+\clearpage
+\pagebreak
+
+\msection{introcolor}{black}{0.25}{TECNOLOGÍA}
+
+\begin{multicols}{2}
+
+\lstset{language=Matlab,framesep=5pt,basicstyle=\small}   
+\begin{lstlisting}
+%
+% Coger, de nuevo, la mayor area.
+[label,num] = bwlabel(Masc3);
+props = regionprops(label,'basic');
+maxarea = -1;
+idx = -1;
+for i=1:num,
+    area = props(i).Area;
+    if (area>maxarea)
+        maxarea = area;
+        idx = i;
+    end
+end % Encontrar el area mayor
+Masc3 = (label==idx);
+Centro = props(idx).Centroid;
+Xc = round(Centro(1));
+Yc = round(Centro(2));
+% Posicion del centro
+radio = 10;
+ee = strel('disk',radio);
+Masc4 = imclose(Masc3,ee);
+% Limpiar (rellenar huecos)
+Imaux = double(imfill(Masc4,[Yc Xc]));
+Masc5 = logical(Imaux-double(Masc4));
+% Esta es la pupila
+Imaux = double(imfill(Masc4,'holes'));
+Masc6 = logical(Imaux-double(Masc5));
+% Mascara rellena menos la pupila
+%
+% Ahora convertir el iris a un rectangulo.
+props = regionprops(Masc5,'basic');
+Centro = props(idx).Centroid;
+Xc = round(Centro(1));
+Yc = round(Centro(2));
+% La mascara solo tiene un objeto
+[alto,ancho] = size(Masc5);
+Rmax = sqrt(alto^2+ancho^2)/2;
+IrisCartesiano = [];
+for tita=0:359, % Para cada angulo
+  % Recorremos ese radio de la imagen.
+  columna = [];
+  for radio=0:Rmax,
+    x = round(Xc+radio*cos(tita*pi/180));
+    y = round(Yc+radio*sin(tita*pi/180));
+    if (x>1)&(x<=ancho)&...
+      (y>1)&(y<=alto)&...
+      (Masc6(y,x)~=0)
+        % Copiar punto en su nueva posicion
+        valor = IrisBN(y,x);
+    else
+         % No hay punto para copiarlo
+         valor = 0;
+    end
+    columna = [columna; valor];
+  end
+  IrisCartesiano = [IrisCartesiano columna];
+end
+%
+% Ahora ecualizar el histograma
+IrisNorm = histeq(IrisCartesiano);
+% Esto ya lo hace el matlab por nosotros
+
+\end{lstlisting}
+
+
+\columnbreak
+
+\begin{center}
+\myfig{0}{images/iris/Fig04.eps}{0.65}
+\begin{spacing}{0.3}
+{\scriptsize {Histograma de grises del iris recortado: aquí deberíamos encontrar los umbrales para localizar el iris. Funciona casi cualquier par que empiece después del pico en cero (pupila negra) y acabe antes del pico en trono al 255 (restos de esclerótica).}}
+\end{spacing}
+\myfig{0}{images/iris/Fig05.eps}{0.35}
+\begin{spacing}{0.3}
+{\scriptsize Máscara inicial para eliminar la pupila.}
+\end{spacing}
+\myfig{0}{images/iris/Fig06.eps}{0.35}
+\begin{spacing}{0.3}
+{\scriptsize Máscara después de limpiarla.}
+\end{spacing}
+\myfig{0}{images/iris/Fig07.eps}{0.35}
+\begin{spacing}{0.3}
+{\scriptsize Pupila localizada: hueco que contiene al centroide de la máscara total.}
+\end{spacing}
+
+\myfig{0}{images/iris/Fig08.eps}{0.35}
+\begin{spacing}{0.3}
+{\scriptsize Si tenemos la pupila podemos rellenar toda la máscara, EXCEPTO, la pupila.}
+\end{spacing}
+
+\myfig{0}{images/iris/Fig09.eps}{0.65}
+\begin{spacing}{0.3}
+{\scriptsize Iris rectangular: se obtiene recorriendo el iris mediante las coordenadas polares. Falta un ``trozo'' debido a que el párpado tapa casi medio iris.}
+\end{spacing}
+
+\myfig{0}{images/iris/Fig10.eps}{0.65}
+\begin{spacing}{0.3}
+{\scriptsize Iris normalizado: al aplicar la ecualización logramos repartir los niveles de gris y ganamos contraste. Ojo, realmente antes de esto habría que quitar la zona negra arriba y abajo y seguramente reescalar a un tamaño fijo.}
+\end{spacing}
+\end{center}
+\end{multicols}
+
+
+\clearpage
+\pagebreak

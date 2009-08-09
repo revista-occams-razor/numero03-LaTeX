@@ -1,0 +1,244 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+%
+% Sección Trucos
+
+
+\rput(3,-2.5){\resizebox{!}{6cm}{{\epsfbox{images/general/varita3.eps}}}}
+\begin{flushright}
+\msection{red}{black}{0.1}{TRUCOS}
+
+\mtitle{6cm}{Con un par... de líneas}
+
+\msubtitle{8cm}{Chuletillas para hacer cosas mú rápido}
+
+{\sf por Tamariz el de la Perdíz}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-10,0)}
+
+\end{flushright}
+
+\vspace{4mm}
+
+\begin{multicols}{2}
+\raggedcolumns
+
+
+\sectiontext{white}{black}{LÍNEA DE COMANDOS AVANZADA PARA CUALQUIER
+PROGRAMA DE CONSOLA}
+\hrule
+\vspace{2mm}
+
+Utilizando la herramienta {\tt cle} podemos añadir funcionalidades
+avanzadas de edición a cualquier programa en modo consola.
+
+Probad, por ejemplo (previa instalación del paquete claro):
+
+\vspace{2mm}
+
+\hrule
+{\footnotesize
+\begin{verbatim}
+occam@razor # cle nc localhost 110
+\end{verbatim}
+}
+\hrule
+
+\vspace{2mm}
+
+Ahora, tras escribir unos comandos, pulsad el cursor arriba, o la
+tecla inicio para editar la línea actual que estéis editando... Impresionante!.
+
+
+\sectiontext{white}{black}{CIFRANDO TU NUEVO DISCO}
+\hrule
+\vspace{2mm}
+
+Los ``device mappers'' proporcionados por los kernel Linux 2.6
+permiten hacer cosas bastante interesantes. Una de ellas es el cifrado
+de dispositivos de una forma sencilla. Si has instalado una
+distribución recientemente, esto funcionará directamente, sino,
+tendrás que instalar algunos paquetes para poder utilizar los ``device mappers''.
+
+\vspace{2mm}
+\hrule
+{\footnotesize
+\begin{verbatim}
+occam@razor # cfisk /dev/sdb
+occam@razor # crypsetup create -y crypt /dev/sdb1 
+Password:
+Password:
+occam@razor # mfs.ext3 /dev/mapper/crypt
+occam@razor # mount /dev/mapper/crypt \
+> /mnt/mi_disco_seguro
+occam@razor #
+\end{verbatim}		   
+}
+\hrule
+\vspace{2mm}
+
+La secuencia de comandos anterior nos permite formatear el disco duro
+(cfdisk), activar el device mapper para una de las particiones
+(cryptsetuo) formatearla (mkfs.ext3) y montar la nueva partición cifrada.
+
+Eso solo lo tenéis que hacer la primera vez. Para su uso normal solo tenéis que hacer lo siguiente:
+
+\vspace{2mm}
+\hrule
+{\footnotesize
+\begin{verbatim}
+occam@razor # crypsetup create crypt /dev/sdb1 
+occam@razor # mount /dev/mapper/crypt \
+> /mnt/mi_disco_seguro
+occam@razor #
+\end{verbatim}		   
+}
+\hrule
+\vspace{2mm}
+
+
+
+\sectiontext{white}{black}{VOLCADO HEXADECIMAL}
+\hrule
+\vspace{2mm}
+
+La herramienta {\tt od} es una de esas grandes desconocidas en los
+sistemas UNIX, que merece la pena conocer dada su
+versatilidad. Básicamente, esta herramienta nos permite realizar
+volcados de datos binarios.
+
+Probablemente los parámetros que utilicéis más a menudo serán estos:
+
+\vspace{2mm}
+
+\hrule
+{\scriptsize
+\begin{verbatim}
+occams@razor # od -Ax -tx1z /bin/ls
+\end{verbatim}
+}
+\hrule
+\vspace{2mm}
+
+El primer parámetro -Ax indica que la base del volcado será
+hexadecimal (otros valores posibles son d para decimal y o para
+octal). A continuación indicamos el formato deseado para el volcado,
+en este caso {\tt x1z} es la cadena elegida. En ella, {\tt x1} indica
+a od que vuelque cada línea de datos como valores hexadecimales de 1
+byte. Si os interesa, por lo que sea, buscar valores de 16 ó 32 bits
+en vuestro chorro binario cambiad 1 por 2 ó 4. La {\tt z} final indica
+a od que, además, vuelque esos datos como una cadena de caracteres.
+
+\vspace{2mm}
+
+\hrule
+{\scriptsize
+\begin{verbatim}
+occams@razor # nc servicio 10000 | od -Ax -tx1z /bin/ls
+\end{verbatim}
+}
+\hrule
+\vspace{2mm}
+
+Cuando no hay otra cosa a mano, es una opción para depurar protocolos
+binarios :).
+
+\vspace{2mm}
+
+\sectiontext{white}{black}{CIFRADO DE FICHEROS}
+\hrule
+\vspace{2mm}
+
+Cifrar ficheros es realmente sencillo usando gpg. Alguna gente cree
+que para usar gpg tiene que generar distintos tipos de claves que no
+sabe muy bien como manejar... Bien, eso es cierto, para utilizar toda
+la potencia de gpg, pero si solo quieres cifrar un fichero, gpg ofrece
+un modo de cifrado simétrico... el de la palabra secreta de toda la
+vida.
+
+Lo único que tenéis que hacer para cifrar y posteriormente descifrar
+un fichero es: 
+
+\vspace{2mm}
+
+\hrule
+{\scriptsize
+\begin{verbatim}
+occams@razor $ gpg -c mi_fichero.tgz
+occams@razor $ gpg  mi_fichero.tgz.gpg
+\end{verbatim}
+}
+\hrule 
+\vspace{2mm}
+
+Por defecto, gpg usa el algoritmo CAST5, pero podéis utilizar
+cualquiera disponible en vuestra versión. Para saber que algoritmos
+podéis usar:
+
+
+\vspace{2mm}
+
+\hrule
+{\scriptsize
+\begin{verbatim}
+occams@razor $ gpg --version
+(...)
+Supported algorithms:
+Pubkey: RSA, RSA-E, RSA-S, ELG-E, DSA
+Cypher: 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH
+Hash: MD5, SHA1, RIPEMD160, SHA256, SHA384, SHA512
+Compression: Uncompressed, ZIP, ZLIB, BZIP2
+occams@razor $
+\end{verbatim}
+}
+\hrule 
+\vspace{2mm}
+
+Como podéis ver, DES ya ni aparece :)
+
+%% Call for tricks
+
+\vspace{2mm}
+
+\sectiontext{white}{black}{UNDO EN VIM}
+\hrule
+\vspace{2mm}
+
+Sí, se nos olvidó comentarlo en el artículo y ya no teníamos
+sitio. Pulsad ``u'' en modo comando para deshacer y ``CTRL+R'' para
+rehacer. ;)
+
+\vspace{2mm}
+
+\colorbox{introcolor}{
+\begin{minipage}{.9\linewidth}{
+\textbf{\textsf{Envía tus trucos}}
+
+\vspace{1mm}
+
+\textsf{Puedes enviarnos esos trucos que usas a diario para compartirlos con el resto de lectores a la dirección: }
+
+\vspace{2mm}
+
+\texttt{occams-razor@uvigo.es}
+}
+\end{minipage}
+}
+
+\raggedcolumns
+\pagebreak
+
+\vspace{6cm}
+\end{multicols}
+
+\clearpage
+\pagebreak
+

@@ -1,0 +1,982 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Mala Bestia
+%
+% Incluye imagen del artículo
+
+
+\rput(2,-2.8){\resizebox{!}{4cm}{{\epsfbox{images/mala_bestia/vim-editor_logo.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{MALA BESTIA}
+
+\mtitle{6cm}{vim. Pequeño pero Matón}
+
+\msubtitle{8cm}{O lo quieres o lo odias}
+
+{\sf por Er Escribano}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{S}{í compañeros, vim, la versión mejorada de vi es una mala bestia, ahí
+donde lo veis. En este artículo vamos a profundizar en las
+características menos conocidas y más potentes de este omnipresente
+editor de textos, que no son pocas.
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+
+
+
+Muchos os preguntaréis: ¿Por qué debería aprender a utilizar vim cuando
+tengo unos editores tan chulos que me hacen la vida tan sencilla y que
+puedo empezar a manejar con mi ratón sin conocer ningún oscuro
+conjunto de comandos?. A esta pregunta podríamos responder de tres
+formas.
+
+La primera es que menudo pedazo de pulmones que tenéis para soltar del
+tirón semejante pregunta :).
+
+La segunda es que uséis el sistema UNIX que uséis, lo más
+probable es que el editor que os encontréis seguro sea vi. Da igual
+que se trate de un Linux, un Solaris o un HP-UX, vi estará allí. Sí vale,
+vi no es vim, pero el uso básico de ambos editores es el mismo.
+
+La tercera es que vim es una mala bestia. En seguida veréis la potencia
+de este pequeño editor de textos que, os enamorará o conseguirá que
+terminéis odiándolo completamente :).
+
+\sectiontext{white}{black}{LO BÁSICO}
+
+Por si algún despistado no ha utilizado nunca vim, vamos a incluir
+esta pequeña sección con lo básico para, simplemente, poder usarlo. Lo
+primero que debe saber el no iniciado sobre vim es que tiene tres
+modos de funcionamiento. A saber: 
+
+El modo edición/inserción. Este es el modo que cualquier usuario espera
+en un editor de textos... pulsas teclas y el texto comienza a aparecer en el
+documento.
+
+\begin{entradilla}
+{\em Vim es mucho {\color{introcolor}más fácil de utilizar} de lo que parece}
+\end{entradilla}
+
+El modo comando. En este modo, cuando un usuario pulsa una tecla le
+indicará a vim que realice una determinada acción. Podéis pensar en
+ello como en ``Hot-keys'' para acceder a un menú, pero sin menú.
+
+Finalmente, vim proporciona un modo de linea de comando en el que
+podemos pedirle que haga cosas más complejas que las que nos permite
+el modo comando.
+
+Por defecto, vim arranca en el modo comando. Para poder escribir,
+necesitamos cambiar a modo edición/inserción. Esto se puede hacer con
+distintos comandos, es decir, pulsando alguna de estas teclas:
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.9\linewidth}|}
+\hline
+i	  & Inicia inserción en la posición del cursor \\
+a         & Inicia inserción después de la posición del cursor \\
+A         & Inicia inserción al final de la línea actual \\
+o         & Inicia inserción en una nueva línea, debajo de la actual \\
+O         & Inicia inserción en una nueva línea, encima de la actual \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+
+
+Para volver al modo comando, basta con pulsar la tecla ESC. Aunque
+existen multitud de comandos, los que probablemente mas utilicéis (y
+con los que se puede escribir cualquier texto) son los siguientes:
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.8\linewidth}|}
+\hline
+0	  & Mueve el cursor al principio de la línea \\
+\$	  & Mueve el cursor al final de la línea \\
+dd	  & Borra/Corta la línea actual \\
+D	  & Borra los caracteres desde la posición del cursor hasta el final de la línea \\
+J	  & Junta la línea inferior y la línea actual \\
+x	  & Borra el carácter sobre el que se encuentra el cursor \\
+/cadena	  & Busca ``cadena'' en el texto hacia delante \\
+?cadena	  & Busca ``cadena'' en el texto hacia atrás \\
+n	  & Busca la siguiente ocurrencia de una búsqueda iniciada con / o ? \\
+N	  & Busca la ocurrencia anterior. \\
+yy	  & Copia la línea actual \\
+p         & Pega la/s líneas copiadas/cortadas debajo de la línea actual \\
+P	  & Pega la/s líneas copiadas encima de la línea actual \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+
+Finalmente, para iniciar el modo de línea de comando, solo tenemos que
+pulsar el carácter ':' cuando nos encontremos en modo comando. En la
+parte inferior del texto aparecerán los ':' y a continuación podremos
+escribir nuestro comando. En esta sección para no iniciados, los
+comandos mínimos que tenéis que conocer son estos:
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.7\linewidth}|}
+\hline
+:w nombre & Graba los cambios en un fichero llamado nombre\\
+:w	 & Graba los cambios \\
+:q	 & Sale \\
+:q!	 & Fuerza salida aunque existan cambios sin grabar. \\
+:wq	 & Graba los cambios y sale \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+
+Bueno, hasta aquí lo más básico para poder trabajar con vim. Si os
+fijáis, aprendiendo estos pocos comandos podréis utilizar vim para
+cualquier tarea básica. Y como podéis comprobar no es tan
+terrible... de hecho, enseguida veréis que es una pasada.
+
+\ebOpage{introcolor}{0.25}{MALA BESTIA}
+
+\sectiontext{white}{black}{ALGUNAS GENERALIDADES}
+
+Si os habéis fijado en los comandos que forman nuestra guía básica de
+supervivencia con vim, todos ellos guardan una cierta simetría. Por ejemplo, la
+diferencia entre mayúsculas y minúsculas es en general muy evidente
+(comandos 'o' o 'n'), la letra elegida para el comando suele estar
+relacionada con lo que hace (i insertar, a añadir, p pegar, n
+siguiente -next/,...), pero además, existen una serie de características
+generales en el modo comando.
+
+La más importante es la capacidad de repetir un cierto comando tantas
+veces como deseemos, simplemente escribiendo un numero antes de
+ejecutar el comando. Por supuesto, esto hay que realizarlo en modo
+comando. Veamos algunos ejemplos:
+
+\begin{entradilla}
+{\em Podemos {\color{introcolor}repetir cualquier comando} precediéndolo de un número}
+\end{entradilla}
+
+Si pulsamos 10 seguido del comando x, ejecutaremos el comando borrar
+caracteres 10 veces, con lo que borraremos 10 caracteres. Si queremos
+borrar las dos líneas justo debajo de nuestra posición pulsaremos
+``2dd''. Y si queremos borrar las cuatro líneas de arriba pulsaremos
+``4DD''... No, si pulsáis 38FF no saldrá una maciza pechugona.
+
+Este último comando ``dd'', no solamente borra líneas, sino que además
+las copia, de forma que se pueden pegar posteriormente. Es el equivalente
+al ``Cortar'' de los clásicos menús de edición de la mayoría de
+aplicaciones gráficas.
+
+En general, cortar líneas para borrar trozos de nuestro texto o
+copiarlos es bastante tedioso, así que vim proporciona un modo de
+selección visual:
+
+\bigskip
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.7\linewidth}|}
+\hline
+SHIFT+V	  & Activa el modo de selección visual para líneas. En este
+modo solo podremos seleccionar líneas completas.\\
+CTRL+V	  & Idem pero para bloques... éste tenéis que probarlo. Pocos
+editores son capaces de hacer esto :).\\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+
+\bigskip
+
+\myfig{0}{images/mala_bestia/vim-visual.eps}{1}
+
+
+Una vez que tengáis seleccionado vuestro bloque de texto (se mostrará
+en vídeo inverso), solo tenéis que ejecutar el comando que queráis
+sobre él. Así, ``dd'' cortará el bloque seleccionado o ``yy'' lo copiará,
+de forma que podremos ``pegarlo'' posteriormente con el comando ``p'' en
+otra parte del documento.
+
+Enseguida veremos que esta forma de selección se puede utilizar
+directamente en el modo de línea de comandos.
+
+Por último comentar que tenemos una tercera opción para manejar
+bloques dentro de nuestro documento. Son las marcadores o
+``bookmarks''. 
+
+Para poner una marca en una línea solamente tenemos que
+pulsar la tecla m, seguida de un carácter. Este carácter sera el
+identificador de nuestra marca. Así la secuencia de teclas ``ma'',
+además de un homenaje tácito a la legendaria serie de televisión ``El
+Equipo A'', asignará el marcador ``a'' a la línea actual.
+
+Pulsando la tecla ``''' seguida del nombre del marcador, nos moveremos a
+la posición asociada al mismo. Como veremos muy pronto, podremos
+utilizar marcadores para referenciar bloques de texto, en comandos más
+complejos.
+
+
+\sectiontext{white}{black}{LINEA DE COMANDOS}
+
+Bien, vamos a empezar con las cosas interesantes. La mayoría de lo que
+comentaremos a continuación tiene que ver con el modo de línea de
+comandos de vim, que si recordáis se activa pulsando la tecla ``:''
+cuando estamos en el modo comando.
+
+Quizás el comando mas útil, o al menos el que yo más uso es el comando
+``s''. Los que hayáis trabajado con sed o Perl lo conoceréis bien. Este
+comando permite localizar un patrón en el texto (utilizando
+expresiones regulares) y sustituirlo por otra cosa. Su sintaxis es
+esta:
+
+\begin{verbatim}
+s/origen/destino/flags
+\end{verbatim}
+
+El flag que más nos interesará es el ``g'', que realiza la operación
+sobre todas las ocurrencias de ``origen'' en una determinada línea. Si
+no utilizamos este flag la sustitución se realizará, únicamente,
+sobre la primera ocurrencia. 
+
+\begin{entradilla}
+{\em El {\color{introcolor}modo línea de comando} es el que nos ofrece las posibilidades
+más interesantes}
+\end{entradilla}
+
+Veamos un ejemplo. Supongamos que estamos haciendo nuestra página web
+y decidimos que queremos meter las imágenes en un directorio en lugar
+de dejarlas en el directorio base con las páginas. Abrimos nuestra
+pagina en vim y ejecutamos:
+
+\begin{verbatim}
+:%s/src="\(.*\)"/src="images\/\1"/
+\end{verbatim}
+
+El carácter ``\%'' al principio de la línea indica que el comando se
+ejecutará sobre todo el fichero, de lo contrario, solo se ejecutaría
+sobre la línea actual. En lugar del ``\%'' podemos proporcionar rangos
+específicos:
+
+\ebOpage{introcolor}{0.25}{MALA BESTIA}
+
+\begin{verbatim}
+:1,5s/pepe/Manolo/
+:1,$s/Gavilan/Paloma/
+:10,$s/foo/bar/
+:'a,'bs/AAAA/BBB/
+\end{verbatim}
+
+Si os decimos que el carácter ``\$'' representa el final del fichero y
+que 'a y 'b son marcas de las que hablamos antes.... estas expresiones
+no tienen ningún secreto verdad?
+%$
+
+Si recordáis, algunas líneas antes hablábamos del modo de selección
+visual a los que accedíamos con las combinaciones de teclas SHIFT + V o CTRL + V. Si seleccionáis un bloque de texto de esta
+forma y entráis en modo linea de comandos (pulsando :) vim
+automáticamente seleccionará ese rango para la ejecución del comando
+que deseemos. Lo que veréis es algo como esto:
+
+\begin{verbatim}
+:'<,'>
+\end{verbatim}
+
+Si, como os podéis imaginar < y > son dos marcas que vim genera
+automáticamente en el modo de selección visual.
+
+\begin{entradilla}
+{\em El comando s/// da otra dimensión al {\color{introcolor}concepto
+de buscar y sustituir}}
+\end{entradilla}
+
+Por si alguno no está familiarizado con las expresiones regulares,
+vamos a hacer dos comentarios sobre el ejemplo anterior. El primero es
+que el uso de los paréntesis (que hay que escapar con el carácter \verb.\.)
+permiten guardar ``en memoria'' el texto que cumple la expresión regular
+dentro de ellos. En nuestro ejemplo, nos estamos quedando con el
+nombre de la imagen, que debe estar entre comillas.
+
+Para utilizar estos valores en la segunda parte del comando ``s''
+utilizamos la expresión \verb!\n!, donde n representa el paréntesis n-ésimo
+de la primera parte. Como podéis ver, las expresiones regulares pueden
+llegar a ser muy engorrosas debido a la necesidad de ``escapar'' los
+caracteres que tienen significado propio... pero son realmente potentes.
+
+Por cierto, si no lo habéis probado, que sepáis que la línea de
+comandos de vim funciona como la de bash, es decir, con el cursor
+arriba podéis acceder a los comandos que acabáis de escribir (vamos la
+historia) y con el tabulador podéis autocompletar los comandos. Esto
+será más interesante un poco más adelante.
+
+\sectiontext{white}{black}{COMANDOS INTERESANTES}
+
+vim proporciona una inmensa cantidad de comandos, para que cualquiera
+pueda estar entretenido un buen rato leyendo. Para los que os guste
+leer, aquí esta el primer comando interesante:
+
+{\small
+\begin{verbatim}
+:help
+\end{verbatim}
+}
+
+:)...  Sí, podéis hartaros de leer la ayuda de vim o seguir
+leyendo este artículo. Comentar en este punto, que la ayuda de vim es
+excelente. Todo lo que comentemos en este artículo está en la ayuda
+on-line, pero aquí os lo presentamos más resumido y sencillo :).
+
+Hay dos comandos especialmente útiles y potentes. El primero es ! y
+el segundo es r.
+
+El comando !, permite ejecutar un comando shell, bueno, no solo eso,
+permite pasarle al comando shell parte del texto que estamos
+escribiendo y sustituirlo por la salida del programa que ejecutemos.
+
+El comando r permite leer datos de un fichero, pero si lo que sigue es
+una ! y un comando shell, lo que obtendremos es la salida de ese
+comando.
+
+Por ejemplo, para añadir la fecha actual a nuestro documento, solo
+tenemos que ejecutar:
+
+{\small
+\begin{verbatim}
+:r ! date
+\end{verbatim}
+}
+
+O para incluir un bonito calendario en nuestro documento solo tenemos
+que :
+
+{\small
+\begin{verbatim}
+:r ! cal 1 2008
+\end{verbatim}
+}
+
+Pero como os decíamos, el comando ! es realmente potente. Veamos un
+ejemplo de una aplicación realmente común... quedar a tomar unas
+birras. Alguien envía la convocatoria por correo (por ejemplo), y la
+gente se empieza a anotar y a proponer el día que le viene bien. El
+``pringao'' responsable de organizar esto, es además un geek y mantiene su
+lista en un fichero de texto que edita con vim. El fichero sería algo como esto:
+
+{\small
+\begin{verbatim}
+Pepe  14
+Manolo	17
+Josefina	11
+Eufrasia	13
+\end{verbatim}
+}
+
+Si ahora queremos ordenar nuestro fichero por nombre, solo tenemos que
+ejecutar un comando como este.
+
+{\small
+\begin{verbatim}
+:% ! sort
+\end{verbatim}
+}
+
+O si los quiere ordenar por la fecha que prefieran, solo tiene que
+ejecutar:
+
+{\small
+\begin{verbatim}
+:% ! sort -k 2
+\end{verbatim}
+}
+
+:)... podéis ejecutar cualquier programa shell, pasarle un fragmento
+de texto para que lo procese y sustituir la salida del programa en el
+texto que estáis escribiendo... 
+
+\sectiontext{white}{black}{ALGO UN POCO MÁS VISUAL}
+
+Aunque en un primer momento, vim parece bastante austero visualmente
+hablando, como se suele decir, las apariencias engañan. Disponemos de
+varios comandos para dividir la pantalla y de esta forma ver varios
+ficheros a la vez.
+
+Si queremos dividir la pantalla verticalmente solo tenemos que
+ejecutar un comando como este:
+
+{\small
+\begin{verbatim}
+:vsplit otro_fichero.txt
+\end{verbatim}
+}
+
+Pero si lo que nos mola es hacerlo horizontalmente, no hay problema.
+
+
+
+
+
+{\small
+\begin{verbatim}
+:split otro_fichero_mas.txt
+\end{verbatim}
+}
+
+\eOpage
+
+\rput(8.5,-4.3){\resizebox{!}{6cm}{{\epsfbox{images/mala_bestia/vim-split.eps}}}}
+
+\msection{introcolor}{black}{0.25}{MALA BESTIA}
+\vspace{6cm}
+
+\begin{multicols}{2}
+
+Para navegar a través de los distintos ficheros, en modo comando,
+pulsamos la tecla CTRL seguida de ``ww''.
+
+\begin{entradilla}
+{\em {\color{introcolor}vim nos permite colapsar y expandir} bloques de texto de forma muy
+sencilla.}
+\end{entradilla}
+
+
+Pero eso no es todo. Como muchos habréis observado, los editores más
+modernos, sobre todo los orientados a programación, proporcionan una
+facilidad para colapsar bloques de texto de forma que podemos quitar
+de nuestra vista partes del texto que no nos interesan en un momento
+dado..., comentarios, funciones sobre las que no estamos trabajando,
+etc... Bien, pues esta funcionalidad también esta disponible en vim. 
+
+
+Para colapsar un bloque de texto, lo seleccionamos utilizando el modo de
+selección visual, por ejemplo, y pulsamos las teclas ``zF''. Para
+expandir un bloque de texto colapsado solo tenéis que situaros en la línea
+de turno y pulsar ``za''.
+
+Podemos anidar estos bloques de texto e ir expandiéndolos uno a uno, o
+expandirlos todos de una sola vez utilizando el comando ``zA''... como
+es lógico :). Para volver a colapsar un determinado bloque solo tenéis
+que volver a pulsar ``zc'' o ``zC'' si queremos aplicar la operación sobre
+todos los bloques recursivamente.
+
+
+
+
+\sectiontext{white}{black}{VIM Y LOS PROGRAMADORES}
+
+A juzgar por la cantidad de características relacionadas con la
+programación, muchos programadores deben utilizar vim. Vamos a ver
+algunas de las más importantes de estas características a continuación.
+
+Como comentamos un poco más arriba, la capacidad de colapsar y
+expandir bloques de texto es muy útil cuando se escriben programas,
+permitiéndote disponer de más sitio para ver las cosas que realmente
+te interesan.
+
+Esta funcionalidad, cuando estamos programando se vuelve mas útil
+ejecutando el siguiente comando:
+
+:set foldmethod=syntax
+
+A partir de ese momento, no necesitaremos seleccionar bloques de
+texto, vim los seleccionará por nosotros dependiendo del realzado de
+sintáxis que esté utilizando. 
+
+\myfig{0}{images/mala_bestia/vim-folding.eps}{1}
+
+
+Existen otros métodos que pueden resultar mas útiles para otras
+aplicaciones.
+
+También vimos como podemos ejecutar comandos shell desde vim, pero
+además, para el caso de compilación de programas, vim ofrece una serie de
+facilidades adicionales.
+
+El primer comando que nos interesa es ``make'', que obviamente realiza la
+misma operación que el programa homónimo disponible en nuestros
+sistemas. Sin embargo, este comando nos proporciona algunas
+ventajas. Vamos a verlo.
+
+Escribid un sencillo programa C, con algún error
+intencionado. Grabad el fichero con el nombre miprograma.c (esto se
+hace con el comando :w miprograma.c) y luego ejecutad lo siguiente
+
+{\small
+\begin{verbatim}
+: make miprograma
+\end{verbatim}
+}
+
+Veremos una serie de errores, y tras pulsar una tecla volvemos a
+nuestro editor. Ahora escribid el siguiente comando:
+
+{\small
+\begin{verbatim}
+: copen
+\end{verbatim}
+}
+
+Mola!... todos los errores listados... pero lo mejor de todo es que
+podemos navegar por ellos, ya sea a través de la propia ventana
+(Quickfix List) o utilizando los comandos :cnext y :cprev.
+
+
+\ebOpage{introcolor}{0.25}{MALA BESTIA}
+
+Si, tenéis razón, es un poco pesado el escribir todo el rato esos
+comandos tan largos... así que vamos a mapear unas teclas al efecto.
+
+{\small
+\begin{verbatim}
+: map <F7> :cn<CR>
+: map <F8> :cp<CR>
+\end{verbatim}
+}
+
+Vaya!, no está nada mal. Como podéis ver asignar comandos a teclas o
+combinaciones de las mismas es bastante sencillo :). Más sobre esto
+dentro de un momento.
+
+Una vez que hayáis corregido todos vuestros errores, podéis cerrar la
+ventana con el comando :close
+
+\myfig{0}{images/mala_bestia/vim-errors.eps}{1}
+
+\sectiontext{white}{black}{ALGUNAS AYUDAS MÁS A LA PROGRAMACIÓN}
+
+Algo que siempre se
+necesita, especialmente los que utilizan Python. El indentado. Aunque
+existen multitud de opciones para controlar esta importante
+característica, los comandos < y > son especialmente útiles,
+permitiendo disminuir o aumentar el nivel de indentado de un
+determinado bloque de texto o linea.
+
+Si se os ha ido de madre la edición, recordad que siempre podéis hacer un:
+
+{\small
+\begin{verbatim}
+!%indent
+\end{verbatim}
+}
+
+Para que alguien deje las cosas en orden por vosotros :).
+
+La otra característica útil a la hora de escribir programas de un
+cierto tamaño, es la navegación a través del código. Aquí tenemos dos
+funcionalidades muy útiles: abrir ficheros cuyo nombre se encuentra en
+el texto, y los tags.
+
+\begin{entradilla}
+{\em Las facilidades que {\color{introcolor}vim ofrece a los programadores}, hacen de él
+una excelente elección para esta tarea.}
+\end{entradilla}
+
+
+Vamos con la funcionalidad para abrir ficheros referenciados en nuestro texto. Un
+caso típico son los includes de los programas C. Para usar esta
+funcionalidad solo tenéis que poner el cursor sobre el nombre del
+fichero, en vuestro programa y pulsar las teclas ``gf''.
+
+
+Para que esta funcionalidad resulte útil necesitamos algo para poder
+navegar por los ficheros que tenemos abiertos en nuestro editor. Para
+ello, disponemos de dos opciones: los buffers y los tabs.
+
+Para acceder a la lista de buffers abiertos en un determinado momento
+utilizamos el comando ``:files'' o ``:buffers''. Este comando nos proporcionara una lista
+numerada. Podemos utilizar esos números junto con el comando :buffer
+para movernos a través de nuestra lista de buffers.
+
+Como es habitual, disponemos de un montón de comandos para manipular
+estos buffers. Los más interesantes los comentamos a continuación:
+
+\bigskip
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.7\linewidth}|}
+\hline
+:buffers	       & Lista de buffers \\
+:buffer N o :b N       & Edita el buffer N \\
+:bn		       & Nos movemos al buffer siguiente \\
+:bp		       & Nos movemos al buffer anterior \\
+:sbn N		       & Divide la pantalla y va al buffer N \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+\bigskip
+
+La otra opción para trabajar con varios ficheros a la vez es utilizar
+tabs. Los tabs, a diferencia de los buffers se muestran en la parte
+superior de la pantalla.
+
+\myfig{0}{images/mala_bestia/vim-tabs.eps}{1}
+
+
+En nuestro ejemplo anterior, en el que abríamos un fichero .h, si pulsamos CTRL+W
+antes del comando ``gf'', el fichero .h se abrirá en un nuevo tab. Podemos
+comprobar la lista de tabs, así como su contenido utilizando el
+comandos :tabs.
+
+Y a que no os imagináis como podéis pasar de un tab a otro?... Si,
+claro que sí, utilizando los comandos :tabn y tabp.
+
+El otro comando relativo a los tabs que os puede interesar es :tabe
+nombre-fichero. Como os imaginaréis, este comando abrirá el fichero
+indicado en un nuevo tab para su edición.
+
+\sectiontext{white}{black}{USANDO TAGS}
+
+Otra funcionalidad de interés para los programadores es el uso
+de los tags. Los tags nos permiten acceder de forma rápida a las
+definiciones de funciones dentro de un programa.
+
+\ebOpage{introcolor}{0.25}{MALA BESTIA}
+
+Los tags son generados por un programa externo llamado ctags. Podéis
+ejecutarlo desde la línea de comandos o directamente desde vim:
+
+{\small
+\begin{verbatim}
+:!ctags *c *h
+\end{verbatim}
+}
+
+Los comandos mas interesantes para trabajar con tags son los
+siguientes:
+
+\bigskip
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.5\linewidth}|}
+\hline
+:tag <tagname>	& Localiza el tag tagname \\
+CTRL-]		& Nos mueve al tag sobre el que se encuentra el cursor \\
+CTRL-T		& Vuelve a la posición anterior \\
+:ptag <tagname> & Localiza el tag tagname, y lo abre en una ventana de preview \\
+CTRL-W \}	& Muestra el tab bajo el cursor en una ventana de preview \\
+CTRL-W z	& Cierra la ventana de preview abierta con el comando anterior \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+\bigskip
+
+Si el fichero de tags para nuestro programa ha sido generado, podemos
+acceder a una determinada función al lanzar vim, utilizando la
+siguiente línea de comandos:
+
+{\small
+\begin{verbatim}
+$ vim -t funcion
+\end{verbatim}
+}
+%$
+
+De esta forma, vim buscará que fichero define la función que pasamos
+como parámetro y lo abrirá automáticamente.
+
+\sectiontext{white}{black}{VIM PARA NO PROGRAMADORES}
+
+Hasta ahora hemos visto un montón de funcionalidades orientadas a la
+programación, pero vim es un editor de propósito general y ofrece
+otras funcionalidades que muchos usuarios genéricos agradecerán.
+
+Lo primero que puede resultar interesante para el usuario común es la
+posibilidad de utilizar el ratón. Para ello ejecutamos el siguiente
+comando:
+
+{\small
+\begin{verbatim}
+:set mouse=a
+\end{verbatim}
+}
+
+El uso del ratón se puede activar de forma independiente en cada uno
+de los modos de operación de vim  (normal, visual, inserción,...). El
+carácter ``a'' en el comando anterior indica a vim que active el ratón
+en todos los modos.
+
+Activar el ratón nos permitirá posicionar el cursor en nuestro texto o
+utilizar la rueda para desplazar el texto arriba o abajo. También
+podremos utilizar el ratón para seleccionar bloques de texto en modo
+visual. Allá cada cual, la verdad es que una vez que te acostumbras a
+utilizar las teclas, el ratón es mucho más lento :).
+
+Otra funcionalidad que puede resultar útil es el uso de abreviaturas,
+sobre todo cuando estamos escribiendo un documento en el que ciertas
+palabras largas se repiten con mucha frecuencia. Para crear una
+abreviatura utilizamos el comando :iabbrev o simplemente iab. Por ejemplo:
+
+{\small
+\begin{verbatim}
+:iab ester esternocleidomastoideo
+\end{verbatim}
+}
+
+A partir de ese momento, cada vez que escribamos la palabra ``ester'' en
+nuestro texto, se sustituirá automáticamente por el nombre
+completo de este conocido músculo.
+
+Podemos eliminar las abreviaturas con el comando ``:una'' o
+``:unabbreviate'' o eliminarlas todas con el comando ``:iabclear''.
+
+La ``i'' al principio del comando le indica a vim que la abreviatura se
+utilizará en modo inserción, es decir, cuando estamos
+escribiendo. Pero podemos crear abreviaturas para el modo línea de
+comandos. Esto se consigue sustituyendo la ``i'' inicial por una ``c''.
+
+{\small
+\begin{verbatim}
+:cab ls files
+\end{verbatim}
+}
+
+Ahora cada vez que escribamos ls en la línea de comandos este será
+sustituido por files.
+
+
+\sectiontext{white}{black}{MAPEADO}
+
+De forma similar funciona el mapeado, pero en este caso asociamos
+secuencias de caracteres a teclas concretas de nuestro teclado. Al
+igual que sucede con las abreviaturas, el mapeado de teclas se puede
+realizar de forma independiente para los distintos modos de
+operación. Concretamente.
+
+\bigskip
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.5\linewidth}|}
+\hline
+normal	   & nmap o map \\
+visual	   & vmap o map \\
+insert	   & imap o map! \\
+command-line	& cmap o map! \\
+operator-pending	& omap o map! \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+\bigskip
+
+
+La forma de utilizar estos comandos es muy sencilla, y ya la
+introdujimos de forma indirecta cuando hablamos de las facilidades
+que vim nos ofrecía para programar. Pero las posibilidades que el
+mapeado de teclas de vim nos ofrece van mucho más allá. Veamos solo un
+par de ejemplos:
+
+{\small
+\begin{verbatim}
+:imap <F3> <Esc><Right>n<Insert>
+\end{verbatim}
+}
+
+Este comando nos permite utilizar la tecla F3 en modo edición a modo
+de ``buscar siguiente''. Cada vez que pulsemos F3 la secuencia de teclas
+ESC, cursor derecho, comando ``n'' y vuelta a modo inserción se
+ejecutará. Si recordáis, el comando n nos permite movernos a la
+siguiente ocurrencia de una búsqueda, pero para ello debemos estar en
+modo comando (pulsando <ESC>).
+
+Y aquí un par de mapeados que os pueden resultar útiles o cuanto menos
+familiares:
+
+{\small
+\begin{verbatim}
+:map <S-S> <Esc>:w<CR>
+:vmap <C-C> yy
+:imap <C-V> <Esc>p<Insert>
+\end{verbatim}
+}
+
+Finalmente, y para terminar con este grupo de facilidades para lidiar
+con tareas repetitivas, vim, como la mayoría de editores de textos,
+permite ``grabar'' secuencias de operaciones y posteriormente repetirlas
+de forma muy sencilla.
+
+\ebOpage{introcolor}{0.25}{MALA BESTIA}
+
+Para empezar a grabar nuestras acciones tenemos que utilizar el
+comando ``q'', seguido de un caracter que identificará la secuencia de
+acciones que realizaremos a continuación. Cuando hayamos terminado,
+simplemente debemos pulsar ``q'' de nuevo para finalizar la grabación.
+
+A partir de este momento cada vez que pulsemos la tecla ``@'' seguida
+del identificador que seleccionamos al iniciar nuestra grabación, la
+secuencia de acciones grabadas será reproducida.
+
+Esta funcionalidad, en combinación con la capacidad de vim para
+ejecutar un comando varias veces simplemente indicando el número de
+vez que lo queremos ejecutar, es una muy potente herramienta para
+llevar a cabo modificaciones mecánicas en un texto de forma muy rápida.
+
+
+\sectiontext{white}{black}{PERSONALIZANDO VIM}
+
+A lo largo de este artículo hemos visto un montón de características
+muy interesantes de vim, pero ninguna de ellas permanente, es decir,
+cuando cerremos la sesión actual, perderemos todas nuestra
+abreviaturas, mapeados de teclas y demás configuraciones.
+
+Semejante mala bestia no podía haber pasado por alto algo tan obvio
+como esto, y por su puesto que no lo ha hecho. Para ello no tenemos
+más que editar el fichero .vimrc que encontraremos en nuestro
+directorio home.
+
+No tenéis más que editarlo  y añadir cualquiera de los comandos que
+hemos visto en este artículo, o cualquier otros que hayáis encontrado
+vosotros mismos (hay un montón más :)
+
+Uno de los comandos que es recomendable añadir a .vimrc es ``syntax
+on'', en el caso que os hayáis percatado que el realzado de sintaxis no
+funciona por defecto en vuestra instalación de vim.
+
+Otros comando de interés, y del que no hemos hablado
+explícitamente a lo largo de este artículo es ``set''. Este comando nos
+permite establecer los valores de ciertas variables globales de vim
+que condicionan su comportamiento. Algunas de estas variables las
+hemos ido introduciendo junto con la funcionalidad relacionada, pero
+hay otras muchas. Aquí os incluimos una lista de las más útiles:
+
+\bigskip
+
+{\color{listcolor}
+{\small
+\begin{tablehere}
+\begin{tabular}{|cp{.5\linewidth}|}
+\hline
+set number    & Muestra números de línea \\
+set tabstop=4 & Modifica el tamaño de los tabuladores \\
+set list      & Muestra caracteres especiales \\
+set incsearch & Realiza las búsquedas según la tecleamos \\
+set laststatus=2 & Muestra la barra de estado permanentemente \\
+set autoindent   & Activa la autoindentación. Útil para programar \\
+set bg=dark	 & Modifica los colores si el fondo de pantalla es oscuro \\
+set bg=light	 & Idem pero con fondo de pantalla claro. \\
+set all		 & Muestra el estado de todas las variables. \\
+\hline
+\end{tabular}
+\end{tablehere}
+}
+}
+\bigskip
+
+
+No, no existe un comando unset. Normalmente para desactivar una opción
+se utiliza el mismo parámetro utilizado para activarla, pero precedido
+de ``no''. Así, los siguientes comandos desactivan las opciones
+anteriores.
+
+{\small
+\begin{verbatim}
+set nonumber
+set nolist
+set noincsearch
+set noautoindent
+\end{verbatim}
+}
+
+Por supuesto todos estos comandos los podéis incluir en vuestro .vimrc
+para que cada vez que lo arranquéis todo esté como a vosotros os gusta
+:)
+
+\sectiontext{white}{black}{MÁS PERSONALIZACIÓN}
+
+Esta sección es solo para los más curiosos, o simplemente para los que
+hayáis leído hasta aquí. No vamos a profundizar en ellas porque
+normalmente, un usuario normal no tendrá que utilizarlas nunca, pero
+un usuario avanzado, debe, al menos, saber que existen.
+
+Pues sí, vim proporciona su propio lenguaje de scripting, con el que
+poder añadir nuevos comandos si es que habéis encontrado algo que
+todavía no hace. El lenguaje es relativamente sencillo y en internet
+podréis encontrar varios tutoriales para iniciaros en él.
+
+La otra funcionalidad que podéis personalizar es el realzado de
+sintaxis. Si bien, pocas cosas debe haber por ahí que vim no sea capaz
+de colorear, sois muy libres de crear vuestros propios ficheros de
+realzado de sintaxis para aplicaciones completas. 
+
+Si estáis en este punto, debéis saber que todos los ficheros que
+utiliza vim se encuentran en ``/usr/share/vim/''. Allí encontraréis
+scripts, ficheros de sintaxis y un montón de sorpresas más.
+
+\sectiontext{white}{black}{PARA TERMINAR}
+
+Y para terminar un poco de humor. En vuestra sesión de vim
+teclead alguno de los siguientes comandos:
+
+{\small
+\begin{verbatim}
+:help!
+:help 42
+:help holy-grail
+:help quotes
+\end{verbatim}
+}
+
+Si queréis pasar un rato divertido no podéis dejar de instalar y
+probar vigor, una versión de vi con un asistente como el mítico clip
+aquel que no nos dejaba en paz.
+
+También existen versiones ``gráficas'' de vim como gvim que nos
+proporciona un menú para acceder cómodamente a la mayoría de las
+funcionalidades que nos ofrece. Si con todo lo que os hemos contado,
+todavía os sigue pareciendo difícil de usar, probad ``cream for vim'',
+una serie de macros orientados a facilitar la vida del principiante.
+
+Finalmente, si queréis comparar ficheros y visualizar gráficamente sus
+diferencias... ahí está vimdiff.
+
+Esto es todo... quién lo diría verdad?... Menuda mala bestia!!!. 
+
+{\em Por cierto, hemos
+dejado lo mejor para la sección de trucos. No os la perdáis.}
+
+\raggedcolumns
+\pagebreak
+\end{multicols}
+
+\pagebreak

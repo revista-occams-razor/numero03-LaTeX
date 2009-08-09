@@ -1,0 +1,578 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Ratas de Tutorial
+%
+% Incluye imagen del artículo
+
+
+\rput(3,-2.1){\resizebox{!}{2.8cm}{{\epsfbox{images/odeon/odeon.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{TUTORIAL}
+
+\mtitle{10cm}{Introducción a la Simulación Acústica}
+
+\msubtitle{8cm}{Aprendemos a utilizar ODEON}
+
+{\sf por Francisco Miguel Bellas Aláez}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{C}{uando se oye hablar de realidad virtual uno
+  siempre piensa en mundo 3D creados mediante programas de
+  renderizado. Sin embargo, también existe la virtualización sonora,
+  es decir, crear entornos virtuales que transformen un sonido de una
+  forma determinada. En este artículo voy a presentar uno de estos
+  programas y, al mismo tiempo, voy a ir dando unas nociones básicas
+  sobre análisis y diseño acústico de salas.  
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+
+Podremos medir y comprobar mediante números y gráficas si una sala
+responde como nosotros queremos pero también podremos probar dicha
+sala escuchando un sonido, una conversación o una melodía como si
+estuviéramos en dicha sala. 
+
+Usaremos a lo largo del artículo  el programa de análisis acústico
+Odeon que, aunque no es gratuito, si dispone de una versión
+demostración que permite trabajar con algunas salas predefinidas, lo
+cual servirá para asimilar los conceptos básicos del diseño y análisis
+de salas. Esta guía está basada en las prácticas de uno de los
+laboratorios de acústica de la ETSIT de Vigo. 
+
+\sectiontext{white}{black}{INSTALACIÓN DE ODEON}
+
+Odeon es un programa de simulación acústica de salas que nos ayuda
+tanto al diseño de nuevas salas como al análisis acústico de salas ya
+construidas. En su versión completa, este programa permite crear salas
+en 3D incluyendo los materiales de que está compuesta para luego
+someter dicha sala a una serie de algoritmos de simulación acústica
+que nos permiten medir los principales parámetros de calidad acústica
+de salas. En este artículo trabajaré con la versión limitada
+(demostración) que permite sólo trabajar con las salas predefinidas. 
+
+\begin{entradilla}
+{\em Odeon ha sido creado por el {\color{introcolor}Departamento de Tecnología Acústica}
+  de la Universidad Técnica de Dinamarca}
+\end{entradilla}
+
+Odeon ha sido creado por el Departamento de Tecnología Acústica de la
+Universidad Técnica de Dinamarca y puede ser descargado de la web: 
+
+{\small
+\begin{verbatim}
+http://www.odeon.dk/
+\end{verbatim}
+}
+
+en el apartado downloads. En el momento de escribir este artículo
+dicha página ofrece la versión 9.0 del programa. Os lo podéis bajar en
+un único fichero zip para Windows. Si tenéis Linux podéis probar a
+instalar en alguna máquina virtual tipo VirtualBox. Parece que se
+puede ejecutar directamente sobre wine, aunque no hemos probado todas
+sus funcionalidades.
+
+La instalación es realmente simple. Desomprimís el zip en una carpeta
+y ejecutáis el programa setup.exe. Prácticamente la única opción que
+hay que seleccionar es vuestra carpeta destino que, curiosamente y al
+revés que en otros programas, no se instala en  
+
+{\small
+\begin{verbatim}
+C:\Archivos de programa\
+\end{verbatim}
+}
+
+si no directamente en el raíz del disco duro fuente. Cambiadlo a
+vuestro gusto y punto. 
+
+\bigskip
+
+\colorbox{excolor}{
+\begin{minipage}{1\linewidth}
+\sf
+\begin{center}
+{\color{black}{\textbf {PARÁMETROS ACÚSTICOS DE INTERÉS}}}
+\end{center}
+
+\medskip
+
+Existen diversas teorías acústicas que ayudan a obtener distintos
+parámetros de calidad de una sala. La teoría estadística permite
+mediante modelado probabilístico del campo acústico obtener la energía
+acústica en distintas partes de una sala y, por tanto, nos permite
+obtener niveles de reverberación. La teoría geométrica modela la
+propagación sonora mediante el trazado de rayos de forma similar a
+como se trabaja en óptica. Finalmente la teoría ondulatoria obtiene la
+ecuación de onda en la sala y obtiene la respuesta en frecuencia de la
+misma. Veamos algunos de los parámetros principales que manejan estas
+teorías: 
+
+\begin{itemize}
+
+\item {\bf Coeficiente de absorción:} Relación entre la energía incidente y
+reflejada en una superficie. 
+
+\item {\bf Tiempo de Reverberación (TR):} Se define como el tiempo en que tarda la
+energía acústica en atenuarse 60 dB una vez que cesa la emisión de la
+fuente (la millonésima parte en unidades naturales). Si en un recinto
+los materiales son acústicamente muy reflectantes este tiempo será
+mayor (se percibirá efecto de un eco muy corto) y si son absorbentes
+será menor. Dependiendo del destino de la sala, un TR muy bajo puede
+ser bueno para que se entienda mejor a un orador, pero puede darle
+mucha ``frialdad'' a una sinfonía. 
+
+\item {\bf Área de absorción equivalente:} Ponderación entre las diversas
+superficies que tiene una sala según su absorción y establecer un
+equivalente mediante una única superficie de determinada área que
+tenga la misma absorción. 
+
+\medskip
+
+\end{itemize}
+\end{minipage}
+}
+
+\ebOpage{introcolor}{0.25}{TUTORIAL}
+
+\sectiontext{white}{black}{COMENZANDO CON ODEON}
+
+A continuación vamos a familiarizarnos con el programa Odeon para
+realizar luego una serie de ejemplos guiados en los cuales quedará más
+claro los conceptos explicados previamente. Tras abrir el entorno de
+trabajo nos encontramos con un formulario con sus menús, iconos y un
+fondo de pantalla absolutamente horrible y que puede parpadear de
+forma muy incómoda dependiendo de la frecuencia de refresco de nuestro
+monitor.  
+
+\myfig{0}{images/odeon/image1.eps}{1}
+\begin{center}{\footnotesize{\bf Figura 1. 3D View}}\end{center}
+\medskip
+
+
+
+Abramos a continuación una de las salas que vienen predefinidas
+(recordemos que en la versión demo sólo se puede trabajar con estas
+salas) entrando en el menú File->Open Room. Escogemos por ejemplo la
+sala auditorium 21 (los archivos son los de extensión .par).  Se abre
+una ventana denominada 3D View en la que  aparece el modelo 3D de
+dicha sala que podemos girar y colocar a nuestro aire mediante el
+ratón. También pulsando la barra espaciadora podemos cambiar ciertas
+vistas predeterminadas (planta, alzado, etc.) 
+
+
+Aparece también un nuevo menú, el 3D View que permite realizar
+distintas tareas con la ventana de representación 3D: Podemos ampliar
+o reducir con la opción zoom; mediante Highligh Surfaces se nos
+muestra una lista de superficies en la parte inferior. Pulsando en
+alguna de ellas la resalta en el dibujo; mediante Show Corner numbers
+and coor se pueden ver las coordenadas de las esquinas de la
+superficie seleccionada y se resalta la esquina seleccionada con un
+círculo azul. 
+
+
+\begin{entradilla}
+{\em La {\color{introcolor}ventana 3D View} nos muestra nuestra sala en 3D}
+\end{entradilla}
+
+
+Os recomiendo jugar con las distintas opciones de este menú que
+afectan exclusivamente a la visualización de la sala. También os
+recomiendo abrir distintas salas y ver las características de las
+mismas.  
+
+En el menú Toolbar hay algunas opciones más que son interesantes como
+primera toma de contacto. Una de ellas es Room Information que nos da
+datos sobre las dimensiones de la habitación. Otra es la vista 3D
+OpenGL que nos permite echar un vistazo a la sala como si estuviéramos
+dentro de ella. También es interesante la opción 3D Reflector Coverage
+que nos muestra mediante código de colores que zonas de la sala son
+reforzadas por los reflectores para distintas fuentes (sources). Hay
+más opciones pero que introduciremos en sucesivos apartados ya que es
+preferible verlas definiendo nosotros los parámetros que podamos y no
+limitándonos a visualizar algo ya hecho. De todas formas podéis probar
+la 3D Billiard o la 3D Investigate Rays que son simulaciones bastante
+espectaculares de la evolución de una onda o de rayos sonoros. 
+
+Finalmente quedaros con la sala Example ya que es muy sencilla y para
+aprender el manejo de Odeon y los conceptos de acústica es la más
+clara. Luego experimentaremos con alguna sala más compleja. 
+
+\sectiontext{white}{black}{DEFINICIÓN DE MATERIALES USADOS}
+
+Aunque la versión demo de Odeon no deje modificar la sala, sí permite
+cambiar los materiales de la misma para hacer distintas pruebas. 
+
+Si tenéis abierta la sala Example, podéis pinchar la opción del menú
+Toolbar->Material List y se abrirán dos ventanas. En la superior
+aparece la representación de la sala y en la inferior la lista de
+superficies a la izquierda y la librería de materiales disponibles en
+el programa a la derecha.  
+
+\begin{entradilla}
+{\em Podremos {\color{introcolor}modidicar los materiales} de nuestra sala}
+\end{entradilla}
+
+Pinchando sobre cualquier material de la lista de la derecha, aparece
+en la parte inferior su repuesta en frecuencia (en referencia al
+coeficiente de absorción) en las bandas de octava 63, 125, 250, 500,
+1000, 2000, 4000 y 8000 Hz que son estándar en medidas
+acústicas. 
+
+\myfig{0}{images/odeon/image2.eps}{1}
+\begin{center}{\footnotesize{\bf Figura 2. Lista de Materiales}}\end{center}
+\medskip
+
+\ebOpage{introcolor}{0.25}{TUTORIAL}
+
+También mediante un gráfico de barras pequeño a la
+izquierda se puede intuir de forma visual la respuesta en frecuencia
+del material.  
+
+
+
+
+Los primeros materiales de la lista son ideales. Es decir, son
+materiales con un porcentaje de absorción determinado en todas las
+frecuencias. Los materiales reales aparecen a partir del 99. 
+
+
+La parte interesante de esto es la posibilidad de asignarle los
+materiales que nos apetezca a las distintas superficies de la
+sala. Para ello lo primero que se hace es seleccionar el material en
+un lado y la superficie en el otro. Luego se pulsa en el icono de
+Asignación de Material que es el primero que aparece en la columna que
+separa la lista de materiales de la lista de superficies (en la misma
+ventana Material List) 
+
+\myfig{0}{images/odeon/image3.eps}{0.1}
+\begin{center}{\footnotesize{\bf Figura 3. Icono de Asignación de Materiales}}\end{center}
+\medskip
+
+
+Por ejemplo podemos tomar la superficie 1001 que es donde estaría la
+orquesta y asignarle el material 900 que es un material que simula la
+absorción de una orquesta con instrumentos. Luego seleccionamos la
+1002, que es la audiencia y le podemos asignar uno de los valores
+entre el 903 y el 909 que son distintos tipos de zonas audiencia con
+sillas de distintos materiales. Por ejemplo el 903. Al resto de las
+superficies (techos y paredes) le podemos asignar un material poco
+absorbente como el 700. 
+
+El parámetro scatter indica la difusión en la reflexión del
+sonido. Poned todos a 0,1 salvo los materiales 1001, 1002 y 2004 que
+les podéis aumentar la difusión a 0,7. 
+
+\sectiontext{white}{black}{FUENTES Y RECEPTORES}
+
+Una vez que tenemos definida la sala, para realizar algún tipo de
+simulación es necesario especificar dónde colocamos las fuentes
+sonoras y dónde se desea colocar el receptor o los receptores. 
+
+ Seleccionamos del menú Toolbar la opción Source Receiver List. Se nos
+ abre una ventana donde podemos especificar fuentes (sources) y
+ receptores (receivers). Pulsando la letra P o en el icono New Point
+ Source (similar a una diana roja) añadimos fuentes y pulsando R o
+ sobre el icono del micrófono (New Receiver) añadimos receptores. 
+
+\medskip
+
+{\small
+\begin{tablehere}
+\begin{tabular}{cp{.7\linewidth}}
+\hline
+\includegraphics[width=0.7cm]{images/odeon/image3-1.eps} & New Point Source\\
+\includegraphics[width=0.7cm]{images/odeon/image3-2.eps} & New Receiver \\
+
+\hline
+\end{tabular}
+\end{tablehere}
+}
+
+\medskip
+
+Pulsamos primero la P y se nos abre una ventana donde podemos
+introducir diversos parámetros. La descripción es el nombre que le
+queramos dar a la fuente. En las coordenadas colocaremos  
+
+\bigskip
+
+$x=3$	$ y=0$	 $z=1,7 $
+
+(usa la coma para los decimales)
+
+\bigskip
+
+A medida que modificamos las coordenadas podemos ver la fuente como un
+círculo rosa en la ventana 3DView.  Mediante Azimut, elevación y
+rotación podemos indicar hacia dónde apunta la fuente. En principio
+podemos dejarlo a cero (En 3DView viene indicado por una línea que
+sale del círculo). 
+
+En la parte inferior indicamos una ganancia (Overall gain) de 65 dB
+que es la potencia de emisión. El apartado EQ es por si se desea
+ecualizar la fuente para darle cierta ``forma en frecuencia''.  
+
+Cerramos la ventana. Sí, en el icono X de la propia ventana. No hay
+botón aceptar así que no lo busquéis ;). Nos aparece la fuente creada
+en la lista.  
+
+Para definir receptores pulsamos la tecla R. Aparece una ventana
+similar pero más sencilla. Sólo se indica coordenada. Aparece también
+un icono de Open GL ya que una vez colocado el receptor podríamos
+comprobar la vista que tiene de la sala desde la posición indicada. 
+
+Crear dos receptores, uno en $x=8, y=-5, z=1,5$ y el otro en $x=20, y=2, z=4$.
+
+\sectiontext{white}{black}{CÁLCULOS DE TIEMPO DE REVERBERACIÓN}
+
+Lo primero que haremos será hacer una estimación del tiempo de
+reverberación mediante teoría estadística. Para ello tenéis que abrir
+primero la Material list y luego seleccionar la opción Quick Estimate
+en el menú Materials. 
+
+Nos aparece un gráfico (pestaña Estimations) que nos muestra el tiempo
+de reverberación de la sala (RT) en segundos para distintas
+frecuencias según 3 métodos distintos: ecuación de Eyring, de Sabine y
+de Arau-Puchades.  Estos métodos cambian en cuanto a precisión y
+complejidad de cálculo. 
+
+\myfig{0}{images/odeon/image4.eps}{1}
+
+
+En la pestaña Material Overview podemos ver la absorción de cada uno
+de los materiales según la frecuencia. 
+
+\ebOpage{introcolor}{0.25}{TUTORIAL}
+
+Esto es muy útil ya que nos puede ayudar a ajustar los materiales de la sala si notamos que hay excesiva absorción o demasiada reflexión para algunas frecuencias. Cabe destacar también que el aire realmente afecta mucho en altas frecuencias y las atenúa por absorción. La pérdida de altas frecuencias provoca una pérdida en el ``brillo'' de la música.
+
+\myfig{0}{images/odeon/image5.eps}{1}
+\bigskip
+
+Podemos ver también que las audiencia y la orquesta (900 y 903) apenas
+varían con la frecuencia (salvo en muy bajas). El 700 absorbe
+realmente poco salvo las frecuencias más bajas. 
+
+La medida está en m2 porque se usa el área de absorción equivalente
+para dar una medida de lo que absorbe cierto material. 
+
+La siguiente pestaña, Unused absortion, indica la absorción que
+podríamos añadir a la sala si sustituimos el material indicado por un
+material ideal totalmente absorbente.  
+
+\sectiontext{white}{black}{¿Y COMO SUENA LA SALA?}
+
+Las simulaciones y los cálculos para mejorar una sala están muy bien,
+pero en el fondo lo que nos gustaría es saber cómo suena. Para eso en
+Odeon existe la Auralización que  crea un entorno sonoro virtual que
+simula el sonido en la sala. Es decir, que seleccionando un receptor
+podemos saber como se escucharía cierto sonido en dicha sala. 
+
+Sin entrar en detalles, para que el programa pueda hacer los cálculos
+hay que establecer una respuesta al impulso de la sala lo
+suficientemente larga. Para este caso vamos a ponerla de 2000ms. En
+Toolbar seleccionamos Calculation Parameters y cambiamos sólo Impulse
+Response (en la parte inferior). 
+
+Seleccionamos en Toolbar la opción Job List. Aquí se definen los
+trabajos de auralización. Seleccionamos el primero y activamos la
+fuente (justo encima de la lista de trabajos). Luego en Receiver
+Pointing to de Source seleccionamos la única fuente (si alguien cerró
+más pues que elija). En Single Point Response Receiver escogemos el
+primer receptor. Luego creamos un segundo trabajo igual pero
+seleccionando el segundo receptor. 
+
+\begin{entradilla}
+{\em Odeon nos permite {\color{introcolor}simular como sonará nuestra sala}}
+\end{entradilla}
+
+Ahora le mandamos realizar los cálculos necesarios para crear el
+sistema que realiza la respuesta al impulso de la sala. Para ello
+apretamos el icono Run All Jobs que lo tenéis tanto en los iconos de
+la derecha como en el menú Job Lists. 
+
+Una vez hechos los cálculos, si no hay errores los trabajos aparecerán
+en verde. Para escuchar el sonido de la sala se debe pulsar en la
+opción Streaming Convolution del menú Job Lists (también los tenéis en
+los iconos de la derecha). 
+
+Os sale una nueva ventana que permite en la parte superior seleccionar
+la señal de entrada. Por defecto trae 3 señales. Una de aplausos
+(bastante parecido a un impulso o delta), otra de música y otra de
+voz. Si marcáis Listen to input signal y le dais a play escucharéis el
+fichero original. Si lo desmarcáis escucharéis como se oiría ese
+sonido en esa sala en la situación de uno de los receptores (el que
+tengáis seleccionado). 
+
+
+\end{multicols}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=16cm,angle=0]{images/odeon/image6.eps}
+
+{\small{\bf Simulación con Odeon}}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+\bOpage{introcolor}{0.25}{TUTORIAL}
+
+
+
+
+
+En la parte inferior se puede seleccionar el otro trabajo, se puede
+disminuir la ganancia si el volumen está muy alto (o aumentarla en
+caso contrario) y se puede ver la sala desde la posición del receptor
+como si estuviéramos en la sala además de escuchándola (eso sí, con
+gráficos bastante pobres). 
+
+
+
+
+
+Ahora podéis probar a cambiar materiales o fuentes en la sala. Por
+ejemplo podéis coger en uno entre el 907 y el 909  para la zona de
+audiencia que simularía la sala con gente. O podéis probar a meter un
+material más absorbente en la pared posterior para comprobar como
+pierde fuerza el oyente trasero. 
+
+Incluso os recomiendo probar otras salas de las de demostración que
+las hay muy interesantes. Podéis ver si están más enfocadas a música o
+a oratoria... o incluso intentar mejorarlas para una de las dos
+funciones. 
+
+
+
+\sectiontext{white}{black}{¿Y QUE MÁS PUEDO HACER?}
+
+Para abrir un poco más el apetito acústico vamos a realizar un ultimo
+experimento. Abre una de las salas predefinidas distinta a la Example,
+por ejemplo el Hagia Irene. Abre la Job List y aparecerán ya un montón
+de trabajos predefinidos y en algunas salas como esta, ya calculados
+(en verde). Además de escuchar como hicimos antes, podéis pulsar en la
+opción View Grid Response del menú Job List. Aparece una maya de
+colores sobre el edificio que representan los niveles de algún
+parámetro. Estos parámetros se cambian con los cursores hacia arriba y
+abajo y en frecuencia con los cursores izquierda y derecha.  Algunos
+parámetros de fácil explicación son: 
+
+\begin{itemize}
+
+\item {\bf SPL:} Potencia sonora
+\item {\bf T30:} una medida del tiempo de reverberación (distinta a la estadística que vimos)
+\item {\bf LF:} Eficiencia Lateral. Es una relación entre el sonido que viene frontalmente (directo) y lateralmente (normalmente reflexiones). 
+\item {\bf STI:} Indice de transmisión del habla. Indica si se entiende bien al oyente. Puede tomar valores de 0 (no se entiende nada) a 1 (se entiende de maravilla). Las reflexiones estropean el parámetro.
+
+\end{itemize}
+
+Y con todos estos parámetros seguramente os preguntaréis: ``Muy bien,
+muy bien, pero yo quiero diseñar una sala fabulosa ¿Cómo tienen que
+estar esos parámetros?'' Bueno, como buen gallego la respuesta es
+``Depende ¿Para que la vas a usar?''. No se si alguno de los lectores
+se habrá fijado pero en muchas ocasiones cuando va a una conferencia
+en una sala determinada la oratoria se oye relativamente mal, es decir,
+las frases del orador no se entienden demasiado bien y, sin embargo,
+si habéis escuchado música en dicha sala es posible que os haya
+gustado como suena. 
+
+Este problema está relacionado con la reverberación del sonido y es
+complicado conseguir una ``sala perfecta'' para todo tipo de
+uso. Cuanta más reverberación tenga una sala, peor es la calidad de
+dicha sala para la oratoria. Parámetros relacionados con la
+inteligibilidad (comprensión) de la palabra como el STI caen de forma
+estrepitosa cuanto mayores sean las reflexiones. Es decir, se entiende
+mal a un orador. 
+
+
+Esto es lógico si pensamos que el eco es una forma retardada del
+sonido, entonces si un orador dice dos palabras seguidas como ``!
+Buenos días!'' y resulta que en la sala en la que estamos escuchando
+hay un cierto nivel de eco, el ``Buenos'' lo oiremos bien, pero
+resulta que al mismo tiempo que oímos la versión directa del ``días''
+nos llega la versión retardada del ``buenos'' que será más molesto y
+hará que se entienda peor cuanto más potente sea dicho eco. Si esto lo
+extrapolamos a una charla completa, puede llegar a no entenderse nada
+de lo que se dice.  
+
+Sin embargo, si disminuimos mucho la reflexión de las superficies de
+la sala y tratamos de dar algún tipo de concierto musical en la misma
+vamos a notar que el sonido está ``apagado'' sin fuerza. Un cierto
+nivel de reverberación para la música (ojo, tampoco debe ser excesiva)
+va a provocar un sonido más envolvente, con mayor ``calidez''.  De ahí
+que sea complicado realizar una sala multiusos. 
+
+
+Entonces ¿cómo podemos mejorar una sala o simplemente una habitación?
+Pues lo más sencillo y económico normalmente es el cambio de
+materiales en las distintas superficies. ¡No! No hace falta que tiréis
+las paredes. Se puede disminuir los ecos en una sala con mucha rever
+metiendo unas buenas cortinas en lugares estratégicos. O si me quiero
+montar un estudio casero puedo utilizar hueveras para cubrir las
+paredes ya que simulan (aunque remotamente) a una sala anecoica (que
+absorbe muy bien los distintos ecos de los instrumentos
+usados). Además, cuando se realza una grabación es muy fácil
+introducir digitalmente los distintos efectos de rever que puedan
+interesar para un acabado ``ideal''.
+
+Si por el contrario lo que quiero es aumentar dicha reverberación ya
+dependemos un poco más de cómo está construida y de qué materiales
+consta. Quizá llegue con sacar esas cortinas del fondo y dejar los
+cristales a la vista ya que el sonido lo refleja muchísimo más un
+cristal que una cortina (y además las cortinas eran horrorosas, así
+que dos pájaros de un tiro). O quitar algunos elementos de la sala si
+la tenemos recargada con muchos muebles o recovecos por los que se
+pueda perder el sonido.  
+
+Se podría escribir un libro más que un artículo si quisiéramos
+explorar todo lo que permite este programa. Para empezar habría que
+adentrarse en la acústica y definir muchos más parámetros y conceptos
+para luego ponerlos en práctica sobre el programa. Quién sabe,  quizá
+en un futuro artículo avancemos un poco más. 
+
+
+
+\end{multicols}
+
+\colorbox{introcolor}{
+\begin{minipage}{.98\linewidth}
+{\footnotesize\sf
+{\color{white}{\textbf{BIBLIOGRAFÍA}}}
+
+Ingeniería Acústica. M. Sobreira, E. Alexandre. Servicio de
+Publicaciones de Teleco Vigo. 2003.
+
+Apuntes de Laboratorio de Acústica Arquitectónica. Sin editar.
+
+http://www.wikipedia.org  (Versión inglesa y española) y http://www.odeon.dk/
+}
+\end{minipage}
+}
+
+\clearpage
+\pagebreak

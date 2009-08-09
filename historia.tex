@@ -1,0 +1,291 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Historia
+%
+% Incluye imagen del artículo
+
+
+\rput(8.5,-3.8){\resizebox{18cm}{!}{{\epsfbox{images/historia/gauss.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{HISTORIA}
+
+\vspace{6.8cm}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{S}{i recordáis el primer artículo que escribí para
+  Occam's Razor, se titulaba ``Mi Historia de las
+  Telecomunicaciones''. En aquel texto ya se mencionaba que el primer
+  sistema de telecomunicación de la historia fue el telégrafo
+  construido por los físicos C. F. Gauss y W. Weber en 1822. 
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+
+  Este
+  artículo pretende describir aquel primitivo sistema esperando que su
+  comprensión os resulte tan interesante como a mí. Debo comentar que
+  el interés por el tema procede del señor Gonzalo Barrio (licenciado
+  en física y empleado de la Fundación Empresa Universidad Gallega,
+  Feuga, www.feuga.es). Gonzalo está realizando su tesis doctoral en
+  un programa de la Universidad de Santiago llamado ``Historia de la
+  Ciencia y la Tecnología'' y decidió encaminar sus esfuerzos a
+  investigar la labor del gran genio alemán. Una parte de ese trabajo
+  es la que describe este artículo: el estudio y descripción del
+  funcionamiento del telégrafo de Gauss y Weber. Cuando Gonzalo me
+  pidió que colaborara en su trabajo, me sentí halagado por su
+  confianza en que encontraríamos la solución pero ante la poca
+  información técnica disponible yo no pensaba que acabaríamos
+  resolviendo el problema. 
+
+
+Nuestra primera fuente de información sobre el telégrafo de Gauss fue esta foto (procedente del museo dedicado a Gauss en Gottingen, la ciudad donde trabajó Gauss durante más tiempo y donde murió en 1855).
+
+\end{multicols}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=13.0cm,angle=0]{images/historia/gauss-image1.eps}
+
+{\bf Figura 1. Telégrafo de Gauss}
+\end{figure}
+
+
+
+\clearpage
+\pagebreak
+
+
+\msection{introcolor}{black}{0.25}{HISTORIA}
+
+\begin{multicols}{2}
+
+Desde luego sólo con esta foto era imposible saber nada. Después logramos más información: más fotos procedentes del mismo museo, una carta de Gauss comentando sus pruebas al astrónomo Olbers y también el CD ``Genial Gauss Gottingen'', editado en Alemania para conmemorar el 250 aniversario de su muerte.
+
+\sectiontext{white}{black}{EL TELÉGRAFO DE MORSE}
+
+Nunca hubiéramos entendido el telégrafo de Gauss sin haber examinado
+primero el de Morse (posterior). El siguiente esquema pertenece a un
+telégrafo de la época de Morse y es mucho más comprensible porque ya
+es un esquema eléctrico:
+
+
+\myfig{0}{images/historia/gauss-image2.eps}{1}
+\begin{center}
+{\footnotesize\bf Figura 2. El telégrafo de Morse}
+\end{center}
+
+\medskip
+
+Vemos que el emisor se basa en una batería y un pulsador. El negativo está conectado permanentemente a tierra y el pulsador permite aplicar tensión o no a la línea. Si pulsamos durante un segundo tendremos un pulso de tensión en la línea... una señal así:
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image3.eps}{1}
+
+{\footnotesize\bf Figura 3. Pulso de tensión generado por una pila y un conmutador.}
+\end{center}
+
+
+Ese pulso va a viajar hasta el otro lado (porque el hilo metálico y la
+tierra forman una línea de transmisión. 
+
+Una vez que el pulso llega a la bobina del electroimán se generará una
+fuerza magnética que atraerá a la pieza metálica que sostiene el
+punzón. Eso hará que se escriba sobre el papel durante el tiempo que
+se ha apretado el pulsador. Como el rollo de papel está continuamente
+en movimiento, si pulsamos sólo un instante el receptor obtiene un
+punto (se ha transmitido un pulso corto). Si pulsamos durante un poco
+más de tiempo se transmitirá un pulso más largo y el receptor obtendrá
+una raya. Con eso ya se ha conseguido una comunicación puesto que 
+somos capaces de enviar dos símbolos diferentes. El telégrafo de Morse
+usa, por tanto, una modulación temporal (la información va en la
+duración de las señales). 
+
+\bigskip
+
+{\colorbox{excolor}{
+\begin{minipage}{0.98\linewidth}
+Además, como sabréis, Morse desarrolló un código prefijo óptimo con 26
+símbolos (las letras del alfabeto). Se trata de un código de longitud
+variable más evolucionado que los de longitud fija (Gauss y Weber
+usaban palabras código de 5 bits para un alfabeto de 32 mensajes
+posibles). Para poder decodificar un código de longitud variable se
+debe cumplir que ninguna palabra código sea prefijo de otra (código
+prefijo). Además, es un código de entropía mínima (las palabras código
+más cortas corresponden a los símbolos más probables logrando una
+longitud media óptima desde un punto de vista estadístico). {\bf El método
+matemático para crear códigos prefijo óptimos no se conoció hasta que
+lo desarrolló Huffman en 1952. ¡Más de cien años después!}
+\end{minipage}
+}}
+
+\bigskip
+
+{\colorbox{introcolor}{
+\begin{minipage}{0.98\linewidth}
+Wilhem Weber (1804-1891) fue un físico alemán recordado por sus trabajos sobre el campo magnético. De hecho, hoy en día a la unidad de flujo magnético se le llama Weber. Weber llegó a ser profesor de física en Gottingen con sólo 27 años. Gauss comenzó a colaborar con él al ver que era un científico de su nivel y juntos desarrollaron varios trabajos. La capacidad de Gauss para idear nuevos artefactos se complementaba muy bien con la capacidad práctica de Weber para crearlos y probarlos.
+\end{minipage}
+}}
+
+\bigskip
+
+{\colorbox{excolor}{
+\begin{minipage}{0.98\linewidth}
+El primer mensaje telegráfico de la historia lo recibió Weber y decía
+textualmente: {\tt Michelman kommt} (``Michelman viene'' en alemán). En él Gauss informaba a Weber de que su común ayudante Michelman había salido del observatorio (donde trabajaba Gauss) en dirección a la facultad de física (lugar de trabajo de Weber).
+\end{minipage}
+}}
+
+\sectiontext{white}{black}{EL TELÉGRAFO DE GAUSS}
+
+A partir del telégrafo de Morse y de la información disponible dedujimos que el telégrafo de Gauss respondía a un esquema eléctrico como éste:
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image4.eps}{1}
+
+{\footnotesize\bf Figura 4. Esquema Eléctrico del Telégrafo de Gauss.}
+\end{center}
+
+\ebOpage{introcolor}{0.25}{HISTORIA}
+
+El emisor consiste en algún tipo de generador o acumulador de energía
+(Gauss en su carta a Olbers le llama ``pila voltaica''). De hecho, en
+las fotos se ve un objeto cilíndrico con aspecto de primitivo
+condensador que podría ser usado para acumular la tensión que va a
+generar los pulsos (podría ser un dispositivo muy similar a la botella
+de Leyden que ya se conocía desde 1746, podéis ver una descripción
+sencilla en: {\small \verb!http://es.wikipedia.org/wiki/Botella_de_Leyden!})
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image5.eps}{0.3}
+
+{\footnotesize\bf Figura 5. Emisor.}
+\end{center}
+
+El código de Gauss y Weber se basaba en mover la aguja receptora
+(horizontal aunque en el esquema aparece vertical) a la izquierda o a
+la derecha, de modo que la modulación de la señal se va a basar en su
+signo (es una modulación en amplitud y no temporal como la del
+telégrafo de Morse). De esta forma, la conexión de la pila emisora a
+la línea tenía que consistir en un interruptor relativamente complejo
+(Gauss le llama ``conmutador'') que permitiera tres estados:
+
+\begin{itemize}
+\item {\bf Neutro}: el operador no hace nada los dos bornes de la pila están abiertos.
+\item {\bf Enviando pulso positivo}: el operador ordena mover la aguja receptora a la derecha  el borne positivo se une a la línea y el negativo a tierra. Se envía un pulso positivo (su duración no es importante pero será el tiempo que el operador mantiene el pulsador en esta posición):
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image6.eps}{0.8}
+
+{\footnotesize\bf Figura 6. Pulso Positivo.}
+\end{center}
+
+\item {\bf Enviando pulso negativo}: el operador ordena mover la aguja receptora a la izquierda el borne positivo se une a tierra y el negativo a la línea. Se envía un pulso opuesto al de Morse:
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image7.eps}{0.8}
+
+{\footnotesize\bf Figura 7. Pulso Negativo.}
+\end{center}
+
+
+\end{itemize}
+
+Nótese que pulsos opuestos generarán campos magnéticos también
+opuestos y movimientos de la aguja hacia un lado o a otro. En el CD se
+dispone de figuras de un manuscrito que detalla el código original y
+se ve que lo que hoy llamaríamos bits aparece codificado con los
+signos ``+'' y ``-'' en vez de ``1'' y ``0''.
+
+\end{multicols}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[height=10.0cm,angle=0]{images/historia/gauss-image10.eps}
+
+{\footnotesize\bf Figura 8. Código Original.}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+\bOpage{introcolor}{0.25}{HISTORIA}
+
+El receptor posee una bobina y una aguja imantada. Gauss le llama
+galvanómetro y, de hecho, es un dispositivo similar a los medidores de
+D'Arsonval (desarrollados por Jacques-Arsène d'Arsonval en el siglo
+XIX) con disposición de la aguja horizontal en vez de estar montada
+sobre un cuerpo giratorio (otra diferencia es que en el medidor de
+D'Arsonval el imán es fijo y la bobina es móvil). 
+
+En este telégrafo era necesario un anteojo para ver las desviaciones
+de la aguja que debían de ser muy débiles. Lo que no es de extrañar si
+se usaba un condensador como fuente de energía: se generaba un pulso
+no muy potente que debía atravesar más de dos kilómetros de un cable
+que seguramente tenía una atenuación por metro muy alta (existe un
+dibujo del tendido inicial realizado sobre los tejados, esta
+instalación unía el laboratorio de Gauss con el de Weber). Otra razón
+es el gran peso de la aguja (Gauss habla de un imán de una libra) y el
+hecho de si se pudo incluir o no un núcleo de hierro en el interior de
+la bobina. De incluirse, el campo magnético es mucho mayor, Gauss habla
+de una bobina de 50 vueltas y no dice nada sobre un núcleo, incluirlo
+parece difícil si tiene que haber una aguja dentro. 
+
+\begin{center}
+\myfig{0}{images/historia/gauss-image8.eps}{1}
+
+{\footnotesize\bf Figura 9. Bobina receptora (izquierda). Anteojo usado para ver el movimiento de la aguja.}
+\end{center}
+
+\sectiontext{white}{black}{CONCLUSIONES}
+
+Como conclusión final pensad que podemos establecer a Gauss y Weber
+como los padres de las telecomunicaciones. Su prototipo no fue muy
+tenido en cuenta en su país, a diferencia del de Morse que logró el
+interés del gobierno norteamericano de la época. Después vinieron
+otros muchos sistemas (ved, por ejemplo, el dossier sobre el tema en
+el primer número de Occam's Razor). 
+
+Como conclusiones más personales a ambos nos ha parecido apasionante
+escudriñar en la historia para intentar explicar el funcionamiento de
+viejos pero ingeniosos sistemas. Es una faceta investigadora un poco
+diferente a las habituales pero igualmente gratificante. 
+
+
+\end{multicols}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[height=12.0cm,angle=0]{images/historia/gauss-image9.eps}
+
+{\footnotesize\bf Figura 10. Tendido inicial. Arriba: puntos inicial y final (laboratorio de física de Weber a la izquierda, observatorio astronómico de Gauss a la derecha). Abajo: mapa de la época detallando el recorrido del cable.}
+\end{figure}
+
+
+
+\clearpage
+\pagebreak

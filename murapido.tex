@@ -1,0 +1,870 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Mú Rápido
+%
+% Incluye imagen del artículo
+
+\rput(8.5,-5.0){\resizebox{18cm}{!}{{\epsfbox{images/murapido/superdemonio.eps}}}}
+
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.25}{MÚ RÁPIDO}
+
+\vspace{9.5cm}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{S}{í, ya estamos muy cerca de disponer de nuestra propia versión de
+inetd. Nuestro propio superdemonio. Como os adelantábamos en el número
+anterior una de las cosas que nos falta por hacer es que nuestro
+servidor pueda escuchar en varios puertos a la vez y ejecutar
+distintos programas en función del puerto utilizado.
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+Por cierto, antes de empezar, coged la última versión de nuestro
+demonio, la que hicimos en el número anterior, ya que la tomaremos
+como base en este artículo y la iremos modificando poco a poco. Os
+recomendamos que descarguéis el paquete asociado de nuestra web, para
+ir probando sobre la marcha lo que aquí contamos... hace que todo esto
+sea mucho más fácil de entender.
+
+\sectiontext{white}{black}{MANOS A LA OBRA}
+
+Lo primero que tenemos que hacer, y esto no tiene nada que ver con las
+redes, es proporcionar a nuestro programa la lista de los puertos, y
+de los programas asociados a cada puerto que queremos que
+maneje. Nuestro querido superdemonio inetd hace esto utilizando el
+fichero /etc/inetd.conf que ya conocemos.
+
+Nosotros, para mantener nuestro programa sencillo simplemente
+tomaremos esa información de la línea de comandos. Cada cual que lo
+haga como prefiera.
+
+
+
+La función que interpreta la línea de comandos y las constantes y
+variables asociadas son estas:
+
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+#define N_PUERTOS 10
+
+static int   s[N_PUERTOS];
+static char *prg[N_PUERTOS];
+
+void
+procesa_params (int argc, char *argv[])
+{
+  int   i, j = 1;
+
+  for (i = 0; i < N_PUERTOS; 
+       prg[i] = NULL, s[i++] = -1);
+
+  i = 0;
+  while (argv[j] && i < N_PUERTOS)
+    {
+      s[i] = crea_server_socket (atoi(argv[j++]));
+      prg[i++] = strdup (argv[j++]);
+    }
+}
+\end{lstlisting}
+
+
+\textbf{ATENCIÓN:}
+\medskip
+
+{\em\colorbox{red}{
+\begin{minipage}{0.98\linewidth}
+Niños, no hagáis esto en vuestras casas, el uso de variables globales
+suele producir graves efectos secundarios... y puede haceros perder
+horas buscando errores... Nosotros es que somos asín y necesitamos que
+los listados no sean muy largos para que los podáis seguir, pues nos
+hemos permitido algunas licencias.
+\end{minipage}
+}
+}
+
+\bigskip
+
+Como podéis ver simplemente declaramos dos matrices. La primera
+contendrá nuestros sockets de servidor, en los que vamos a esperar las
+conexiones, y la segunda contendrá los nombres de los programas a
+ejecutar cuando se acepte una conexión en uno de los sockets s. Sí,
+podéis crear una estructura para manejar las dos cosas juntas... es
+más largo (por eso no lo hemos hecho), pero queda mejor :)
+
+Ahora añadimos una llamada a esta nueva función al principio de
+nuestro main, pasándole como parámetros argc y argv.
+
+
+\ebOpage{introcolor}{0.25}{MÚ RÁPIDO}
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int main (int argc, char *argv[])
+{
+
+  procesa_params (argc, argv);
+  ...
+}
+\end{lstlisting}
+
+\sectiontext{white}{black}{SOCKETS BLOQUEANTES}
+
+Hasta este momento, hemos estado utilizando una semántica bloqueante
+con nuestros sockets. Lo que esto significa es que si queremos leer
+algo de la red y no hay nada que leer, nuestro proceso quedará
+bloqueado en esa instrucción hasta que recibamos algún dato.
+
+\begin{entradilla}
+{\em Los sockets bloqueantes {\color{introcolor} bloquean nuestro
+proceso} hasta que puedan completar una cierta operación
+}
+\end{entradilla}
+
+
+Aceptar conexiones es un caso particular de lectura, y por lo tanto,
+cuando ejecutamos la llamada al sistema accept y no existe ninguna
+conexión pendiente, nuestro proceso queda bloqueado en esa
+instrucción hasta que alguien se conecte con nosotros. Si queremos
+aceptar conexiones en varios puertos diferentes... pues tenemos un
+problema. 
+
+Si escribimos un código como el siguiente, que es lo único que podemos
+hacer por el momento:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int  sa1, sa2, s1, s2;
+
+sa1 = crea_server_socket (2000);
+sa2 = crea_server_socket (3000);
+
+while (1) {
+  s1 = acepta_conexion (sa1);
+  s2 = acepta_conexion (sa2);
+  ...
+}
+\end{lstlisting}
+
+
+Como podéis observar, estamos creando nuestros dos sockets de servidor
+y a continuación comenzamos a aceptar conexiones.
+
+El problema es que si
+nuestro socket es bloqueante, nuestro programa se quedará parado en el
+primer accept (el del puerto 2000). 
+
+
+
+
+Pero si en ese momento llega un intento de conexión al segundo puerto
+(el 3000), nuestro programa no podrá atenderlo, ya que está parado,
+esperando conexiones en el primer puerto (el 2000)... es decir,
+todavía no se ha ejecutado el segundo acepta\_conexion.
+
+De la misma forma, si recibimos un intento de conexión en el puerto
+2000, pasaremos a esperar conexiones en el puerto 3000, de forma que
+un nuevo intento de conexión al puerto 2000 tampoco sería atendido.
+
+Existen tres formas fundamentales de lidiar con esta situación.
+
+La primera consiste en crear una proceso o mejor una hebra, por cada
+puerto en el que queramos aceptar una conexión. Todas ellas se
+ejecutarán concurrentemente y no habrá problema con quedarse bloqueado
+en la llamada al sistema accept.
+
+La segunda consiste en hacer que nuestros sockets utilicen una
+semántica no bloqueante. En este caso, el proceso no se bloqueará en
+las llamadas al sistema como accept o read. Si hay algo que leer o una
+conexión que aceptar el resultado será el habitual, sino recibiremos
+un error indicando que no hay nada que hacer. Para el problema que nos
+ocupa, estaríamos continuamente ejecutando accept y, la mayor parte
+del tiempo obteniendo como resultado un error indicando que no hay
+nada que hacer. Como los sockets son ahora no bloqueantes, si no hay
+nada que hacer con uno de ellos, pasaremos al siguiente y así
+sucesivamente.
+
+La desventaja de esta forma de trabajar es que nuestro programa tiene
+que hacer lo que se conoce como espera activa, es decir, estaremos
+comprobando el estado de nuestros sockets continuamente, consumiendo
+CPU en el proceso.
+
+La tercera forma de manejar múltiples conexiones, y en general la
+buena, aunque eso siempre depende de la aplicación, es utilizar la
+llamada al sistema select. Esta es la que nosotros utilizaremos con
+nuestro superdemonio.
+
+\sectiontext{white}{black}{SELECT}
+
+La llamada al sistema select nos permite ``monitorizar'' conjuntos de
+descriptores de ficheros. En lo que a nosotros respecta esos
+descriptores de ficheros serán sockets, pero en general pueden ser de
+cualquier tipo, una FIFO, un dispositivo en /dev o la entrada
+estándar.
+
+
+
+
+Podemos monitorizar estos conjuntos de descriptores respecto a tres
+tipos diferentes de eventos, a saber: lectura, escritura y
+excepciones. Nosotros solo usaremos el evento de lectura, si bien los
+demás funcionan de la misma forma.
+
+
+\begin{entradilla}
+{\em La llamada al sistema {\color{introcolor}select nos permitirá manejar varios sockets
+a la vez}
+}
+\end{entradilla}
+
+
+
+Cuando ejecutamos una llamada a select desde nuestro programa, éste
+pasará al estado ``dormido'', hasta que alguno de los eventos
+configurados ocurra o pase un cierto tiempo (ahora veremos como
+configurarlo). Una vez que uno de esos eventos ocurre, podremos llevar
+a cabo nuestra lectura, escritura o manejo de excepción sin tener que
+esperar.
+
+La forma de utilizar select consta de tres partes:
+
+\begin{itemize}
+\item Configuración de la lista de descriptores de fichero a monitorizar y
+  del timeout
+\item Ejecución de select y gestión de errores
+\item Comprobación del estado de los sockets y acción pertinente.
+\end{itemize}
+
+
+\ebOpage{introcolor}{0.25}{MÚ RÁPIDO}
+
+\sectiontext{white}{black}{AÑADIENDO SELECT A NUESTRO PROGRAMA}
+
+Con todo lo que hemos visto hasta el momento, la función main de
+nuestro nuevo servidor tendrá la siguiente apariencia. La reproducimos
+entera por comodidad.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int main (int argc, char *argv[])
+{
+  fd_set             rfds;
+  struct timeval     tv;
+  int                n, max, i;
+  int                terminar = 0;
+  
+  procesa_params (argc, argv);
+
+  while (!terminar)
+    {
+      max = prepara_select (&rfds, &tv);
+      if ((n = select (max, &rfds, 
+                       NULL, NULL, &tv)) < 0)
+	perror ("select:");
+      else
+	{
+	  if (!n)
+	    {
+	      printf ("Me aburro!\n");
+	      continue;
+	    }
+	  /* Comprobamos sockets */
+	  procesa_conexiones (&rfds);
+	}
+    }
+  return 0;
+}
+\end{lstlisting}
+
+Lo primero que encontramos es nuestra función ``procesa\_params'' que ya
+hemos comentado. A continuación nos encontramos un bucle infinito, en
+el que estaremos infinitamente aceptando conexiones y ejecutando
+procesos.
+
+En el código se pueden apreciar claramente las tres partes necesarias
+para el uso de select. La función prepara\_select se encarga de la
+configuración de la lista de descriptores de ficheros a monitorizar y
+la configuración del timeout. 
+
+Esta función también nos devuelve el valor máximo en la lista de
+descriptores de ficheros creada, valor que select espera como primer
+parámetro.
+
+A continuación nos encontramos con la ejecución de select propiamente
+dicha. En este caso solamente estamos monitorizando un conjunto de
+descriptores para el evento de lectura. Los dos NULLs que siguen a
+continuación contendrían, respectivamente, las listas de descriptores
+para escritura y para excepciones.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{entradilla}
+{\em El {\color{introcolor}timeout de select} nos permite ejecutar
+código mientras esperamos por la red.
+}
+\end{entradilla}
+
+La llamada al sistema select devolverá un valor negativo en caso de
+error (como es habitual), el valor 0 si ha vencido el timeout
+configurado con la variable tv sin recibir ningún evento y un número
+positivo, indicando cuantos de nuestros descriptores de ficheros han
+recibido un evento en el caso de que algún evento haya sucedido.
+
+
+
+
+Como podéis ver el las líneas de código anteriores, en el caso de
+recibir un evento la función procesa\_conexiones es ejecutada. En breve
+veremos lo que hace dicha función.
+
+\sectiontext{white}{black}{CONFIGURANDO SELECT}
+
+Para la configuración de select utilizamos una sencilla función
+llamada ``prepara\_select''. Esta función recibe dos parámetros. El
+primero es una variable del tipo fd\_set en el que almacenaremos la
+lista de descriptores de fichero que queremos monitorizar para los
+eventos de lectura.
+
+\begin{entradilla}
+{\em El macro {\color{introcolor}FD\_SET nos permite determinar los
+socket} que select monitorizará
+}
+\end{entradilla}
+
+Si quisiéramos monitorizar los otros tipos de eventos (escritura,
+excepción), tendríamos que utilizar dos variables adicionales. 
+
+La segunda variable es la que nos permite configurar el timeout, es
+decir, el tiempo que nuestro proceso permanecerá dormido como
+máximo. Si durante ese tiempo no recibimos ningún evento, select
+retornará el valor 0 y nos permitirá llevar a cabo las acciones que
+consideremos oportunas. Normalmente volver a configurar y ejecutar
+select.
+
+Ambos parámetros se pasan como punteros a la función para permitir que
+ésta los modifique.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int
+prepara_select (fd_set *rfds, struct timeval *tv)
+{
+  int  i, max;
+
+  max = 0;
+  FD_ZERO(rfds);
+  for (i = 0; i < N_PUERTOS && s[i] != -1; i++)
+    {
+      FD_SET(s[i],rfds);
+      if (s[i] > max) max = s[i];
+    }
+  max++;
+
+  tv->tv_sec = 4;
+  tv->tv_usec = 0;
+
+  return max;
+}
+\end{lstlisting}
+
+Como podéis ver en el código de prepara\_select, el manejo de las
+variables del tipo fd\_set se lleva a cabo con los macros FD\_ZERO y
+FD\_SET. El primero de ellos ``vacía'' la lista de descriptores que
+contiene la variable, mientras que el segundo añade un descriptor de
+fichero a la lista que se indica.
+
+Es necesario saber cual es el mayor valor del descriptor de fichero
+que se añade a la lista. Este es el primer parámetro que select
+espera.
+
+Tras inicializar nuestra lista de descriptores de ficheros,
+configuramos el timeout a utilizar. En este ejemplo es de 4
+segundos. Observad que select permite especificar el timeout con una
+precisión de microsegundos (sí para eso es el campo tv\_usec de la
+estructura timeval).
+
+\ebOpage{introcolor}{0.25}{MÚ RÁPIDO}
+
+
+
+\sectiontext{white}{black}{PROCESANDO CONEXIONES}
+
+Tras la ejecución de select, si se ha producido algún evento, tenemos
+que procesarlo. Los casos de error y timeout se procesan directamente
+en la función main. El tercer caso, un intento de conexión a alguno de
+nuestros puertos lo procesamos en una función a parte.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+void
+procesa_conexiones (fd_set *rfds)
+{
+  int  i, as;
+
+  for (i = 0; i < N_PUERTOS; i++)
+    if (s[i] != -1 && FD_ISSET(s[i],rfds))
+      {
+	printf ("Conexion a %d\n", i);
+	as = acepta_conexion (s[i]);
+	printf ("Conexion aceptada en %d\n", as);
+	procesa (as, s[i], prg[i]);
+	printf ("Ejecutando '%s'\n", prg[1]);
+      }
+}
+\end{lstlisting}
+
+Esta función, simplemente recorre la lista de nuestros sockets, para
+averiguar cual de ellos fue el responsable del evento que estamos
+procesando. Esta comprobación se lleva a cabo con el FD\_ISSET, el cual
+nos indicará si el descriptor de fichero indicado ha recibido un
+evento dentro de la lista de descriptores (nuestra variable rfds) que se pasa como segundo
+parámetro.
+
+\begin{entradilla}
+{\em Sabremos que {\color{introcolor}socket ha producido el evento} gracias al macro FD\_ISSET}
+\end{entradilla}
+
+
+Si hemos recibido uno de esos eventos de lectura, eso significa que
+alguien está tratando de conectarse a uno de nuestros sockets, así que
+simplemente aceptamos la conexión con la misma función
+``acepta\_conexion'' que definimos en el artículo anterior y ejecutamos
+el proceso asociado a ese puerto con la función ``procesa''. Esta
+función ``procesa'' ha sido modificada ligeramente para que funcione con
+el nuevo esquema de gestión de conexiones, y la veremos un poco más adelante.
+
+Para los más impacientes, esta modificación consiste, simplemente, en
+que la función ``procesa'' cierra el socket de comunicación en el proceso
+padre después de crear el proceso hijo. Si no hacemos esto, todas las
+conexiones permanecerán abiertas, puesto que el socket sigue abierto en
+el proceso padre, aunque el proceso hijo lo haya cerrado (todos los
+descriptores de ficheros se cierran automáticamente cuando un proceso
+muere).
+
+Si queréis ver cual es el efecto de esto, solo tenéis que comentar la
+línea con el close al final de la función ``procesa''.
+
+\sectiontext{white}{black}{LA NOCHE DE LOS MUERTOS VIVIENTES}
+
+Bien, ya casi hemos terminado. En este punto todo debería funcionar
+perfectamente. Para comprobarlo simplemente compilamos nuestro nuevo
+super-server y lo ejecutamos.
+
+{\small
+\begin{verbatim}
+$ make server\_simple4
+$ ./server_simple4 2000 ./echo.pl 4000 ./echo.pl
+\end{verbatim}
+}
+
+Si ahora nos conectamos al puerto 2000 o al puerto 4000 de localhost,
+nuestro pequeño servidor de echo escrito en Perl, se ejecutará y nos
+responderá con lo mismo que nosotros le digamos.
+
+Realizad unas cuantas conexiones y luego ejecutad ps:
+
+{\small
+\begin{verbatim}
+$ ps -e
+13614 pts/8    Z+     0:00 [echo.pl] <defunct>
+13620 pts/8    Z+     0:00 [echo.pl] <defunct>
+13627 pts/8    Z+     0:00 [echo.pl] <defunct>
+$
+\end{verbatim}
+}
+
+
+
+Sí, efectivamente. Son zombies (eso es lo que significa la Z de la
+tercera columna).
+
+En la sección consultorio del primer número de ``Occam's Razor'' le
+contábamos a Van Helsing como tratar con estos malditos, pero por si
+alguien no tiene a mano ese legendario número, vamos a contaros
+como solucionar este problemilla aquí.
+
+En nuestro caso particular, lo solución que vamos a adoptar es la de
+proporcionar una manejador de señales para poder ejecutar la llamada
+al sistema waitpid, cada vez que algún proceso hijo muera, y de esta
+forma dejar que vaya hacia a luz... a un mundo mejor...
+
+El manejador de señales sería algo tal que así:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+void handler (int s)
+{
+  pid_t pid;
+  int  status;
+
+  pid = waitpid( -1, &status, WNOHANG ) ;  
+ 
+  printf ("Child done with status %d\n", status);
+}
+\end{lstlisting}
+
+Y en nuestra función main, al principio de la misma, tendremos que
+añadir una línea como esta:
+
+{\small
+\begin{verbatim}
+       signal (SIGCHLD, handler);
+\end{verbatim}
+}
+
+La señal SIGCHLD (de children... niños) se envía cada vez que un
+proceso hijo termina su ejecución. Sin embargo, esta ejecución no es
+completa hasta que el proceso padre se da por enterado... es decir,
+ejecuta la llamada al sistema wait. Si el proceso padre no ejecuta esa
+llamada al sistema, el proceso hijo mantiene sus recursos en memoria
+aún cuando su ejecución ya ha terminado, convirtiéndose en un proceso
+zombie... ni vivo ni muerto.
+
+\begin{entradilla}
+{\em Si no tenemos cuidado {\color{introcolor}nos invadirán los zombies}}
+\end{entradilla}
+
+Nuestro manejador de señales nos va a asegurar que cada vez que uno de
+nuestros hijos pase a mejor vida, nosotros nos enteremos y podamos
+ejecutar la llamada al sistema wait y dejar así que el pobre descanse
+en paz.
+
+\ebOpage{introcolor}{0.25}{MÚ RÁPIDO}
+
+\sectiontext{white}{black}{UN POCO MÁS DE FLEXIBILIDAD. TCCLIB}
+
+¿Habéis leído ya la sección ratas de biblioteca?... Pues a que estáis
+esperando. En este número os contamos como utilizar tcclib para
+generar código en tiempo de ejecución a partir de fuentes C. Pues
+bien, no estaría nada mal utilizar esta librería en nuestro
+superservidor para poder escribir servicios de red mú rápido... vamos
+a ver como hacerlo.
+
+
+
+Para que el código no nos quede demasiado largo declararemos algunas
+variables globales más y almacenaremos el código C a ejecutar en un
+fichero llamado ``script.c'' que se encontrará en el mismo directorio
+que nuestro servidor.
+
+\begin{entradilla}
+{\em {\color{introcolor} TCCLib nos permitirá} implementar
+nuestros servicios {\color{introcolor}como ficheros de texto}}
+\end{entradilla}
+
+También aprovecharemos nuestra sencilla función para interpretar la
+línea de comandos. Ahora, las cadenas que acompañan a los puertos van
+a representar funciones en el fichero script.c, en lugar de procesos
+externos.
+
+Para inicializar tcclib y cargar y compilar el código en el fichero
+script.c vamos a declarar una nueva variable global, definir un tipo
+para referenciar nuestros punteros a funciones y escribir una pequeña
+función que inicialice nuestro compilador run-time:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+typedef int (*MIFUNC)(void);
+static  TCCState           *tcc;
+
+int carga_codigo (TCCState *s, char *nf)
+{
+  FILE         *f;
+  char          b[1024];
+
+  /* Lee fichero */
+  memset (b, 0, 1024);
+  f = fopen (nf, "rt"); fread (b, 1024, 1, f); 
+  fclose (f);
+
+  tcc_set_output_type (s, TCC_OUTPUT_MEMORY);
+  tcc_compile_string (s, b);
+  tcc_relocate (s);
+  return 0;
+}
+\end{lstlisting}
+
+De forma mú rápida,
+hemos declarado el tipo de las funciones que implementarán nuestros
+nuevos servicios. Se trata de funciones que retornan un entero y no
+reciben ningún parámetro.
+
+Dependiendo de vuestras necesidades concretas podéis cambiar este tipo
+según os convenga. A continuación declaramos la variable que contendrá
+nuestro entorno de compilación en memoria, y que inicializaremos en la
+función carga código. Una vez más recordad que ésta no es la mejor
+forma de hacer esto. Las variables globales dan problemas.
+
+Para simplificar el resto del código definimos también una sencilla
+función para obtener los punteros a las funciones en nuestro fichero
+script.c.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+MIFUNC lee_funcion (TCCState *s, char *nombre_func)
+{
+  MIFUNC        un_script;
+  unsigned long v;
+
+  tcc_get_symbol (s, &v, nombre_func);
+  un_script = (void*)v;
+
+  return un_script;
+}
+\end{lstlisting}
+
+Ahora tenemos que hacer algunos cambios a nuestras funciones para
+adaptarlas a la nueva funcionalidad.
+
+\sectiontext{white}{black}{PEQUEÑOS CAMBIOS}
+
+Lo primero que vamos a hacer es añadir una nueva variable en la que
+almacenar el puntero a la función en ``script.c'' que asociaremos a cada
+servicio. Esto es fácil, junto al resto de variables s y prg
+añadimos esta nueva línea:
+
+{\small
+\begin{verbatim}
+static MIFUNC mifunc[N_PUERTOS];
+\end{verbatim}
+}
+
+
+Ahora ya podemos modificar nuestra función procesa\_params para que
+resuelva la dirección en memoria de la función que se recibe a través
+de la línea de comandos. La versión modificada de procesa\_params será
+la siguiente:
+
+
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+void
+procesa_params (int argc, char *argv[])
+{
+  int   i, j = 1;
+
+  for (i = 0; i < N_PUERTOS; 
+       prg[i] = NULL, s[i++] = -1);
+
+  i = 0;
+  while (argv[j] && i < N_PUERTOS)
+    {
+      s[i] = crea_server_socket (atoi(argv[j++]));
+      prg[i] = strdup (argv[j++]);
+      mifunc[i++] = lee_funcion (tcc, prg[i]);
+    }
+}
+\end{lstlisting}
+
+Como podéis observar simplemente hemos añadido una nueva línea dentro
+del bucle principal de la función que inicializa nuestra matriz de
+punteros a funciones. Ahora, por cada puerto en el que nuestro
+servidor escuchará tendremos un socket, una cadena con el nombre de
+una función y el puntero a esa función en memoria.
+
+\begin{entradilla}
+{\em {\color{introcolor} Unos pequeños cambios} y tendremos nuestro
+server funcionando de nuevo}
+\end{entradilla}
+
+La función procesa\_conexiones también necesita una pequeña
+modificación. En este caso sustituiremos la líneas:
+
+{\small
+\begin{verbatim}
+procesa (as, s[i], prg[i]);
+\end{verbatim}
+}
+
+por
+
+{\small
+\begin{verbatim}
+procesa (as, s[i], mifunc[i]);
+\end{verbatim}
+}
+
+\ebOpage{introcolor}{0.25}{MÚ RÁPIDO}
+
+Es decir, en lugar de pasar el nombre del programa externo a ejecutar,
+pasamos el puntero a la función a ejecutar.
+
+Finalmente, la función procesa también debe ser modificada. la nueva
+versión quedaría tal que así:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int procesa (int s, int sa, MIFUNC la_funcion)
+{
+  pid_t   pid;
+
+  if ((pid = fork ()) < 0)
+    fprintf (stderr, "No puedo crear el proceso");
+  else
+    {
+      if (!pid) /* Proceso hijo */
+	{
+	  close (sa);
+
+	  dup2(s, 0);
+	  close (s);
+	  dup2(0, 1);
+	  dup2(0, 2);
+
+	  la_funcion ();
+	  exit (0);
+	}
+    }
+  close (s);
+  return 0;
+}
+\end{lstlisting}
+
+Como podéis ver el tercer parámetro de la función ahora es un puntero
+a una función, en lugar del nombre del proceso externo a ejecutar, y
+la llamada al sistema execv ha sido sustituida por la llamada a la
+función que recibimos como parámetro.
+
+\begin{entradilla}
+{\em En unas pocas líneas de texto {\color{introcolor} podemos
+implementar algunos servicios comunes}}
+\end{entradilla}
+
+
+Para minimizar el número de cambios, hemos mantenido la llamada a fork
+para crear un nuevo proceso, si bien en este caso la creación de una
+hebra sería menos costosa... Bien, ahí tenéis una cosilla para
+entreteneros.
+
+Finalmente, el bloque de inicialización en nuestro programa principal
+también se verá ligeramente modificado... no así el bucle principal
+que no requiere ningún cambio. Este bloque de inicialización será
+ahora:
+
+{\small
+\begin{verbatim}
+main ...
+
+  tcc = tcc_new ();    
+  carga_codigo (tcc, "script.c");
+  signal (SIGCHLD, handler);
+  procesa_params (argc, argv);
+\end{verbatim}
+}
+
+\sectiontext{white}{black}{PROBANDO NUESTRO SUPERSERVER}
+
+Para probar nuestro super servidor de la muerte, tenemos que escribir
+un fichero script.c con las funciones en C que queremos ejecutar cada
+vez que un cliente se conecte a alguno de nuestros servicios.
+
+Nosotros hemos escrito este sencillo script.c
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+#include <time.h>
+#include <string.h>
+
+int serv_echo (void)
+{
+  char buffer[1024];
+  int  len;
+	
+  len = read (0, buffer, 1024);
+  write (1, buffer, len);
+
+  return 0;
+}
+
+int serv_time (void)
+{
+  time_t  hora;
+  char   *la_hora;
+
+  time (&hora);
+  la_hora = (char*) ctime (&hora);
+  write (1, la_hora, strlen (la_hora));
+}
+
+int serv_chargen (void)
+{
+  while (1)
+    {
+      if ((write (1, "AAAAAAAAAAAAAAAAAAAA", 20)) < 0)
+	break;
+    }
+}
+\end{lstlisting}
+
+
+El fichero define tres funciones que ofrecen tres sencillos servicios
+que normalmente inetd implementa de forma interna: el servicio de
+echo, el servicio de hora y el servicio de generación de caracteres.
+
+Ahora ya podemos ejecutar nuestro flamante servidor con, por ejemplo,
+esta línea de comandos:
+
+{\scriptsize
+\begin{verbatim}
+./server_tcclib 2000 serv_echo 3000 serv_time 4000 serv_chargen
+\end{verbatim}
+}
+Ya podéis utilizar nc o telnet para comprobar como van nuestros nuevos
+servicios.
+
+
+
+\sectiontext{white}{black}{ESTO ES TODO}
+
+Bueno, esperamos que os haya resultado interesante esta breve
+explicación de cómo programar vuestro propio superdemonio. El
+resultado final os proporciona un esqueleto general para poder
+implementar sencillos protocolos mú rápido, sin tener que escribir ni
+una línea de código relacionada con la red.
+
+Hemos dejado algunas cosas en el tintero para que os entretengáis con
+ellas... siempre es más divertido descubrir las cosas por uno mismo
+que que nos las cuenten. Con lo que os hemos contado hasta aquí,
+podéis descargar las fuentes de inetd (o su hermano mayor xinetd) y
+estudiar el código y averiguar hasta el último detalle de esta
+aplicación UNIX que ha estado ahí desde el principio.
+
+Como siempre, estaremos encantados de saber de vuestros éxitos así
+como de cualquier uso curioso o mejora que hagáis sobre estos
+sencillos esqueletos de programa que os ofrecemos. Por supuesto, serán
+publicados en el próximo número con vuestras explicaciones.
+
+En el próximo número nos introduciremos en un nuevo y excitante campo
+de la programación... pero esto es una sorpresa. 
+
+\raggedcolumns
+\pagebreak
+
+
+\end{multicols}
+
+\pagebreak

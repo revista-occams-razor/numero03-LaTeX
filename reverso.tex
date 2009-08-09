@@ -1,0 +1,986 @@
+% Este fichero es parte del Número 3 de la Revista Occam's Razor
+% Revista Occam's Razor Número 3
+%
+% (c)  2007, 2008, The Occam's Razor Team
+%
+% Esta obra está bajo una licencia Reconocimiento 2.5 España de Creative
+% Commons. Para ver una copia de esta licencia, visite 
+% http://creativecommons.org/licenses/by/2.5/es/
+% o envie una carta a Creative Commons, 171 Second Street, Suite 300, 
+% San Francisco, California 94105, USA.
+
+% Seccion Reverso Tenebroso
+%
+% Incluye imagen del artículo
+
+
+\rput(1,-2.4){\resizebox{!}{6cm}{{\epsfbox{images/reverso/cage.eps}}}}
+
+% -------------------------------------------------
+% Cabecera
+\begin{flushright}
+\msection{introcolor}{black}{0.35}{REVERSO TENEBROSO}
+
+\mtitle{10cm}{Poniendo Contraseñas a Ejecutables}
+
+\msubtitle{11cm}{O como parchear el segmento .note.ABI-tag}
+
+{\sf por Er de la Sección}
+
+{\psset{linecolor=black,linestyle=dotted}\psline(-12,0)}
+\end{flushright}
+
+\vspace{2mm}
+% -------------------------------------------------
+
+\begin{multicols}{2}
+
+
+% Introducción
+\intro{introcolor}{C}{uando se dispone del código fuente de una
+  determinada aplicación (como sucede en los sistemas libres), añadir
+  una contraseña a cualquiera de ellos para no permitir su uso por
+  desconocidos es sencillo. Pero cuando el código fuente no está, la cosa
+  es un poco más... interesante.
+}
+
+\vspace{2mm}
+
+% Cuerpo del artículo
+
+En este artículo vamos a describir una sencilla técnica para parchear
+ejecutables. El ejemplo que utilizaremos, proteger con una contraseña,
+no es que sea especialmente útil, pero es una de las cosas más
+sencillas que podemos hacer para ilustrar el proceso. 
+
+Una vez sepáis como funciona todo esto, estamos seguros de que se os
+ocurrirán montones de ideas interesantes con las que divertiros
+parcheando ejecutables. Bien, vamos a ello.
+
+
+
+% Introducción al formato ELF
+\sectiontext{white}{black}{EL FORMATO ELF}
+
+El formato ELF (Executable and Linkable Format o formato ejecutable y
+enlazable), es el formato utilizado por la mayoría de los sistema UNIX
+para sus programas, es decir, todo ejecutable en nuestro sistema se
+almacena en el disco utilizando este formato (bueno, podemos utilizar
+otros formatos, pero no es lo habitual).
+
+Cuando compilamos nuestros programas a partir del código fuente, en el
+lenguaje que más rabia nos dé, iniciamos un proceso bastante complejo
+que termina cuando nuestro programa está cargado en memoria. 
+
+Sí, vale, tras compilar nuestro programa obtenemos un fichero
+ejecutable en el disco y parece que ahí se termina todo, sin embargo,
+el sistema todavía tiene que hacer unas cuantas cosas al cargarlo en
+memoria para que ese fichero se convierta en la imagen de un proceso
+en ejecución.
+
+\begin{entradilla}
+{\em {\color{introcolor}ELF es el formato ejecutable} más común en los sistemas UNIX}
+\end{entradilla}
+
+
+Así, el fichero que almacenamos en disco es el resultado del proceso
+de enlazado (link), pero el proceso de carga para su ejecución,
+requiere que el sistema lleve a cabo ciertas operaciones como la
+relocalización de código o la carga de librerías dinámicas externas y
+su enlazado en tiempo de ejecución. Estas tareas las realiza el
+denominado enlazador dinámico (dynamic linker en inglés :).
+
+
+Nosotros, en este artículo, vamos a trabajar sobre los ficheros
+ejecutables. Básicamente vamos a hacer de enlazadores, añadiendo
+código a un fichero ELF, y modificándolo para que, cuando el programa
+se cargue en memoria y el enlazador dinámico lleve a cabo su tarea,
+todo esté correcto.
+
+% Cabecera y Punto de Entrada
+\sectiontext{white}{black}{CABECERA Y PUNTO DE ENTRADA}
+
+Como suele ser habitual, los formatos de fichero suelen tener una
+cabecera. Esta cabecera nos proporciona información para verificar que
+el fichero es de ese formato y para acceder al resto de información
+que el fichero contiene.
+
+Pues bien, el formato ELF empieza con una pequeña cabecera. 
+
+Antes de continuar, permitirnos hacer un pequeño comentario. En este
+artículo no vamos a describir todos los detalles del formato ELF,
+solamente aquellos que tengan que ver con el tema que nos ocupa. Los
+que estéis interesados en conocer todos los detalles sobre ELF (merece la pena)
+deberéis descargaros la especificación de este formato, la cual
+encontréis fácilmente en Internet. 
+
+Tras este breve inciso, veamos la cabecera típica de un ejecutable
+ELF. Para ello vamos a utilizar la herramienta readelf, que nos
+permite visualizar la información interna de los ficheros de una forma
+sencilla.
+
+{\scriptsize
+\begin{verbatim}
+occam@razor: $ readelf -h /bin/ls
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x8049b40
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          76752 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         8
+  Size of section headers:           40 (bytes)
+  Number of section headers:         27
+  Section header string table index: 26
+
+\end{verbatim}
+%$
+}
+
+De todos esos campos en la cabecera del fichero a nosotros nos van a
+interesar dos de ellos. El primero, como os podéis imaginar es la {\em
+  Dirección del Punto de Entrada} (Entry Point Address). 
+
+Este campo nos dice cual es la dirección de memoria en la que empezará la
+ejecución del programa, una vez haya sido cargado y procesado.
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+El segundo campo que nos va a interesar es el desplazamiento del {\em
+  Comienzo de las cabeceras de programas} (Start of program
+  headers). En seguida veremos que esto.
+
+% Secciones y Segmentos 
+\sectiontext{white}{black}{SECCIONES}
+
+El formato ELF, organiza toda la información que el sistema necesita
+para poder ejecutar un programa en dos estructuras principales:
+secciones y segmentos.
+
+Las primeras, las secciones, realmente contienen pistas y ayudas para
+los cargadores de programas, depuradores, etc... 
+
+Veamos que apariencia tienen las secciones de nuestro querido
+\verb!/bin/ls!:
+
+{\scriptsize
+\begin{verbatim}
+occam@razor: $ readelf -S /bin/ls
+There are 27 section headers, starting at offset 0x12bd0:
+
+Section Headers:
+  [Nr] Name              Type          Addr     Off    Size   
+  [ 0]                   NULL          00000000 000000 000000 
+  [ 1] .interp           PROGBITS      08048134 000134 000013 
+  [ 2] .note.ABI-tag     NOTE          08048148 000148 000020 
+  [ 3] .hash             HASH          08048168 000168 000340 
+  [ 4] .dynsym           DYNSYM        080484a8 0004a8 0006d0 
+  [ 5] .dynstr           STRTAB        08048b78 000b78 0004bb 
+  [ 6] .gnu.version      VERSYM        08049034 001034 0000da 
+  [ 7] .gnu.version_r    VERNEED       08049110 001110 0000c0 
+  [ 8] .rel.dyn          REL           080491d0 0011d0 000028 
+  [ 9] .rel.plt          REL           080491f8 0011f8 000308 
+  [10] .init             PROGBITS      08049500 001500 000017 
+  [11] .plt              PROGBITS      08049518 001518 000620 
+  [12] .text             PROGBITS      08049b40 001b40 00cec8 
+  [13] .fini             PROGBITS      08056a08 00ea08 00001c 
+  [14] .rodata           PROGBITS      08056a40 00ea40 003c2f 
+  [15] .eh_frame_hdr     PROGBITS      0805a670 012670 00002c 
+  [16] .eh_frame         PROGBITS      0805a69c 01269c 0000ac 
+  [17] .ctors            PROGBITS      0805b748 012748 000008 
+  [18] .dtors            PROGBITS      0805b750 012750 000008 
+  [19] .jcr              PROGBITS      0805b758 012758 000004 
+  [20] .dynamic          DYNAMIC       0805b75c 01275c 0000e0 
+  [21] .got              PROGBITS      0805b83c 01283c 000008 
+  [22] .got.plt          PROGBITS      0805b844 012844 000190 
+  [23] .data             PROGBITS      0805b9e0 0129e0 00010c 
+  [24] .bss              NOBITS        0805bb00 012aec 000430 
+  [25] .gnu_debuglink    PROGBITS      00000000 012aec 000008 
+  [26] .shstrtab         STRTAB        00000000 012af4 0000db 
+\end{verbatim}
+%$
+}
+
+Por cuestiones de espacio hemos eliminado las últimas columnas de la
+salida del comando, ya que no no nos son de utilidad. Aunque para
+parchear nuestro programa trabajaremos casi exclusivamente con los
+segmentos del programa, pero un par de comentarios sobre las secciones
+son necesarios... para que os pique la curiosidad.
+
+Lo primero que hay que comentar es que las secciones tienen nombre, y
+espero que os hayáis fijado en el nombre de una de las primeras que os
+debería sonar, a no ser, claro, que seáis de esas personas que no leen
+los títulos de los artículos :).
+
+\begin{entradilla}
+{\em Las {\color{introcolor}secciones de tipo PROGBITS} son las que se encuentran
+  realmente en el fichero}
+\end{entradilla}
+
+Lo segundo es que hay varios tipos de secciones. Ya sabéis, si queréis
+conocer los detalles consultad la especificación. En lo que a
+nosotros respecta, el tipo interesante es PROGBITS. 
+
+Todas las
+secciones de este tipo, se encuentran físicamente en el fichero y
+serán cargadas en la posición de memoria que indica la columna Addr,
+cuando ejecutemos el programa. Además, la siguiente columna, Off, nos
+indica el desplazamiento en el fichero en el que se encuentran los
+datos asociados a esa sección y que serán cargados en la dirección de
+memoria respectiva.
+
+Sobre la sección .note.ABI-tag, volveremos más tarde.
+
+% Segmentos
+\sectiontext{white}{black}{SEGMENTOS O CABECERAS DE PROGRAMA}
+
+Los segmentos o
+cabeceras de programas (Program Headers) son la otra estructura de
+datos principal, que el formato ELF maneja. 
+
+Estos segmentos son los que definen la
+estructura física real que un determinado programa tendrá en
+memoria... es decir, donde y como aparecerá cada parte del programa en
+la memoria del ordenador. Lo que se conoce como el mapa de memoria del
+proceso. 
+
+Veamos la lista de segmentos de \verb!/bin/ls!:
+
+{\scriptsize
+\begin{verbatim}
+occam@razor: $ readelf -l /bin/ls
+
+Elf file type is EXEC (Executable file)
+Entry point 0x8049b40
+There are 8 program headers, starting at offset 52
+
+Program Headers:
+  Type         Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR         0x000034 0x08048034 0x08048034 0x00100 0x00100 R E 0x4
+  INTERP       0x000134 0x08048134 0x08048134 0x00013 0x00013 R   0x1
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+  LOAD         0x000000 0x08048000 0x08048000 0x12748 0x12748 R E 0x1000
+  LOAD         0x012748 0x0805b748 0x0805b748 0x003a4 0x007e8 RW  0x1000
+  DYNAMIC      0x01275c 0x0805b75c 0x0805b75c 0x000e0 0x000e0 RW  0x4
+  NOTE         0x000148 0x08048148 0x08048148 0x00020 0x00020 R   0x4
+  GNU_EH_FRAME 0x012670 0x0805a670 0x0805a670 0x0002c 0x0002c R   0x4
+  GNU_STACK    0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.ABI-tag .hash .dynsym .dynstr .gnu.version 
+.gnu.version_r .rel.dyn .rel.plt .init .plt .text .fini .rodata 
+.eh_frame_hdr .eh_frame 
+   03     .ctors .dtors .jcr .dynamic .got .got.plt .data .bss 
+   04     .dynamic 
+   05     .note.ABI-tag 
+   06     .eh_frame_hdr 
+   07     
+\end{verbatim}
+%$
+}
+
+Por cuestiones de espacio hemos eliminado la última columna de la
+salida del programa. Esta columna define la alineación de cada uno de
+los segmentos (byte, palabra, página,...), para nuestro cometido, no
+necesitamos esta información, pero existen otras técnicas de parcheado
+de binarios que si la requieren.
+
+Lo primero que vemos es que la lista de segmentos es mucho más pequeña
+y además, que estos no tienen nombre. La utilidad {\tt readelf} nos
+proporciona un mapeado de secciones y segmentos al final de la
+salida. 
+
+Estos mapeados se determinan a partir de las direcciones de secciones y
+segmentos del tamaño de los segmentos. Podéis hacer la prueba vosotros
+mismos.
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+El resto de la información asociada a cada segmento es bastante obvia:
+el desplazamiento dentro del fichero donde se encuentran los datos,
+las direcciones en las que se crearán los segmentos y su tamaño en
+disco y en memoria.
+
+Observad que en general el tamaño en disco y en memoria son iguales,
+excepto para el segmento número 3 (empezamos a contar en 0 :). Si nos
+fijamos en las secciones asociadas a ese segmento nos encontramos la
+sección .bss. Esta sección es la que contiene los datos no
+inicializados, y por lo tanto, no necesitamos almacenar ninguna
+información en el fichero.
+
+Cuando el programa se carga en memoria, el cargador se encarga de que
+haya espacio para esos datos.
+
+% Formato del proceso en Memoria
+\sectiontext{white}{black}{MAPA DE MEMORIA DEL PROCESO}
+
+Bien. ¿Y qué aspecto tiene todo esto en memoria?. Pues básicamente el
+que nos ha mostrado readelf cuando le pedimos que nos listara los
+segmentos del programa, pero algunos comentarios nos van a ayudar a
+comprender la forma en la que parchearemos el programa en breve.
+
+La siguiente figura muestra el mapa de memoria típico de un proceso en
+el sistema operativo GNU/Linux.
+
+\myfig{0}{images/reverso/mapa-memoria-proceso.eps}{0.5}
+
+Hay dos cosas interesantes en esta figura. La primera es
+que, al menos en los sistemas GNU/Linux, los ejecutables se cargan a
+partir de una dirección física en memoria (0x800440000). Esto va a
+hacer nuestra vida mucho más sencilla.
+
+La segunda es que el bloque inicial de segmentos (cabecera + código +
+datos) se corresponde exactamente con el contenido de nuestro fichero
+ejecutable. Esto es así debido al diseño del formato ELF, en el que se
+pretendía reducir lo más posible las operaciones a realizar para
+cargar un proceso en memoria. En la siguiente sección veremos como
+sacar partido de esto.
+
+Finalmente, observad que en la figura hemos incluido los permisos de
+cada segmento (la columna Flg que nos proporciona readelf -l). 
+
+Si os fijáis, el primer segmento es el que contiene el código de
+nuestro programa y solamente tiene permisos de lectura (R) y (E), lo
+cual es lógico... no queremos que el programa se pueda modificar o
+automodificar... ¿o sí lo queremos?.
+
+\begin{entradilla}
+{\em Los {\color{introcolor}ficheros ELF se cargan directamente en memoria} para su ejecución}
+\end{entradilla}
+
+El segundo segmento es el que contiene los datos, variables, sección
+bss, etc... Este, como es lógico, se inicializa con permisos de
+lectura (R) y escritura (W).
+
+Como es habitual, la pila se sitúa en las posiciones altas de la
+memoria y ``crece'' hacia las bajas, y las librerías dinámicas y el
+heap (memoria dinámica... malloc y todo eso) utilizarán la memoria a
+continuación de los segmentos que componen el programa, creciendo
+hacia las direcciones altas. 
+
+De esta forma cuanto más uso hagamos de la memoria dinámica y de la pila, el
+hueco entre ambas se irá haciendo más pequeño.
+
+
+
+% Parcheando segmentos
+\sectiontext{white}{black}{PARCHEANDO EJECUTABLES}
+
+Después de esta ``no corta'' introducción vamos al tema que nos
+ocupa. Parchear ejecutables.
+
+Existen varias formas de parchear un ejecutable ELF. Animamos a los
+interesados en conocer los detalles de las otras alternativas, a leer
+los textos de Silvio Cesare... totalmente imprescindibles. Lo que os
+hemos contado hasta ahora os resultará útil para comprender las
+distintas técnicas que el señor Cesare explica estupendamente.
+
+Como os decíamos, nosotros vamos a utilizar la que quizás sea la técnica
+más sencilla: el parcheado del segmento .note.ABI-tag.
+
+La técnica es muy sencilla, básicamente consiste en los siguientes
+pasos:
+
+\begin{itemize}
+\item Abrir el fichero a parchear 
+\item Añadirle al final el código que queremos insertar
+\item Localizar el segmento que contiene la sección .note.ABI-tag
+\item Modificar el segmento para:
+\begin{itemize}
+\item que el sistema cargue este segmento con el resto
+  del programa cuando este es ejecutable
+\item Tenga permisos de ejecución
+\item Los offsets en memoria y en el disco apunten al código que hemos añadido
+\end{itemize}
+\item Modificar el punto de entrada en la cabecera ELF para que la
+  ejecución se inicie en el nuevo código insertado
+\item Añadir cualquier información extra que queramos.
+\end{itemize}
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+No os preocupéis esto es mucho más sencillo de lo que parece :).
+
+\sectiontext{white}{black}{ALGUNAS ACLARACIONES}
+
+Antes de meternos con los fragmentos de código que hacen cada una de
+las operaciones que necesitamos, vamos a hacer algunas aclaraciones
+sobre el porqué de que esto se haga de la forma en la que se hace.
+
+Lo primero es porque utilizamos la sección .note-ABI.tag. 
+
+Bien, hay
+varias razones. La primera es que, al menos en los sistemas GNU/Linux
+está siempre ahí, gcc la genera. 
+
+\begin{entradilla}
+{\em {\color{introcolor}Añadir segmentos a un ejecutable es complicado}, así que
+  reutilizamos uno de los existentes}
+\end{entradilla}
+
+La segunda, y más importante, es que
+añadir un nuevo segmento a un ejecutable es bastante complicado, así
+que nos interesa reutilizar alguno de los que ya existen. El segmento
+asociado a la sección .note-ABI-tag, ya existe y no tiene ninguna
+utilidad en la práctica. Es decir, no vamos a romper el programa si lo
+utilizamos para otra cosa.
+
+Utilizar alguno de los otros segmentos sería bastante más
+complicado. Bueno, si nuestro código es pequeño existen trucos, pero
+en el caso general no resulta práctico.
+
+
+\sectiontext{white}{black}{PREPARACIÓN}
+
+En nuestro parcheador, utilizamos un par de funciones de ayuda y una
+constante. Este primer bloque del listado lo podéis ver a continuación.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#include <elf.h>
+#include <sys/mman.h>
+
+#define ADDRESS 0x08044000 
+
+int get_file_size (int fd)  {
+  struct stat _info;
+  fstat(fd,&_info);
+  return _info.st_size;
+}
+
+void PURGATUS_EST (int sys, int cond, char *msg) {
+  if (cond) {
+      if (sys) 	perror (msg); 
+      else fprintf (stderr, "%s\n", msg);
+      exit (1);
+    }
+  return;
+}
+
+
+\end{lstlisting}
+
+Sí, existe un fichero elf.h que nos va a hacer nuestra vida más fácil
+a la hora de leer cabeceras y modificar segmentos.
+
+Además necesitaremos algunas variables en nuestra función main.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+int main (int argc, char *argv[]) {
+  void           *data;
+  int            size, size1;
+  int            fd, fd1;
+  int            i;
+  Elf32_Ehdr     *elf_hdr;
+  Elf32_Phdr     *elf_seg;
+  unsigned char  *code;
+
+  PURGATUS_EST (0, argc!=4, 
+               "Usar: ./note-patch exe codigo clave");
+\end{lstlisting}
+
+Lo primero que hace nuestro programa es comprobar que recibe el número
+de parámetros correctos. Tal y como lo hemos programado, el programa
+espera como primer parámetro el nombre del ejecutable a parchear, como
+segundo parámetro, el código que queremos insertar (más tarde veremos
+como generarlo) y finalmente la clave.
+
+Si recordáis, lo que pretendíamos hacer era poder añadir una clave a
+cualquier ejecutable en nuestro sistema, deforma que si la clave
+correcta no es proporcionada, el programa no se ejecuta. Bien, esa
+clave la grabaremos a fuego y sangre al parchear el ejecutable.
+
+% Modificando ficheros. mmap
+\sectiontext{white}{black}{LEYENDO CÓDIGO Y MODIFICANDO EL EJECUTABLE}
+
+Lo siguiente que hará nuestro programa es cargar en memoria el código
+a insertar y a continuación abrir el fichero del ejecutable a parchear
+de forma que podamos modificarlo cómodamente.
+
+La forma más sencilla de trabajar con un ejecutable para parchearlo es
+utilizando la llamada al sistema mmap. De esta forma mapeamos el
+fichero directamente en memoria, modificamos las posiciones de memoria
+que nos interese y luego cerramos el fichero.
+
+Aquí podéis ver el fragmento de código que realiza estas dos acciones:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+/* Leemos código a injectar */
+PURGATUS_EST (1, 
+      (fd1 = open (argv[2], O_RDWR, 0)) < 0, 
+      "open1:");
+
+size1 = get_file_size (fd1);
+PURGATUS_EST (0, (code = malloc(size1)) == NULL, 
+              "No puedo reservar memoria");
+read (fd1, code, size1);
+close (fd1);
+
+/* Abrimos ejecutable y lo mapeamos en memoria */
+PURGATUS_EST (1, 
+    (fd = open (argv[1], O_APPEND | O_RDWR, 0)) < 0, 
+    "open2:");
+/* Mapeamos fichero */
+size = get_file_size (fd);
+PURGATUS_EST (0, 
+       (data = mmap (0, size, 
+                PROT_READ | PROT_WRITE | PROT_EXEC, 
+		MAP_SHARED, fd, 0)) == 0, 
+         "mmap:");
+
+\end{lstlisting}
+
+La primera parte es trivial, simplemente leemos el fichero que
+contiene el código a injectar en un bloque de memoria dinámica que
+reservamos a tal efecto.
+
+En el segundo bloque de instrucciones abrimos el fichero
+ejecutable. Notad el uso de O\_APPEND, ya que necesitamos añadir
+nuestro código al final del ejecutable.
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+La instrucción mmap es la que nos va a permitir acceder a ese fichero
+que acabamos de abrir como si se tratara de una bloque de
+memoria. Observad que activamos todo los permisos. El de ejecución no
+lo necesitamos realmente, pero hay otras aplicaciones en las que hace
+falta y así ya sabéis como se usa :P.
+
+\sectiontext{white}{black}{PARCHEANDO SEGMENTOS}
+
+En este punto ya tenemos todo listo para parchear los segmentos de
+nuestro ejecutable. Veamos el fragmento de código y a continuación lo comentamos.
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+/* Patch code */
+elf_hdr = (Elf32_Ehdr*) data;
+/* Patch note segment */
+elf_seg = (Elf32_Phdr*)((unsigned char*)elf_hdr + 
+          (unsigned int)elf_hdr->e_phoff);
+for (i = 0; i < elf_hdr->e_phnum; i++) {
+  if (elf_seg->p_type == PT_NOTE) { 
+    elf_seg->p_type = PT_LOAD;
+    elf_seg->p_flags = 0x7;     
+    elf_seg->p_offset = size;
+    elf_seg->p_vaddr = 
+             elf_seg->p_paddr = ADDRESS + size;
+    elf_seg->p_filesz = elf_seg->p_memsz = size1;
+    elf_seg->p_align = 0x1000;
+    break;
+  }
+  elf_seg = (Elf32_Phdr*)((unsigned char*)elf_seg 
+            + elf_hdr->e_phentsize);
+}
+PURGATUS_EST (0, (i == elf_hdr->e_phnum), 
+              ".note.Abi-tag segment not found");
+\end{lstlisting}
+
+Lo primero que hacemos es asignar un puntero del tipo
+\verb!Elf32_Ehdr! a la zona de memoria en la que hemos mapeado nuestro
+fichero ejecutable. Esto nos va a permitir acceder a la cabecera ELF a
+través de esta estructura de datos (definida en elf.h).
+
+A continuación calculamos la posición de la tabla de segmentos, un
+bloque del fichero en el que se encuentra toda la información que nos
+proporciona el comando readelf -l. 
+
+\begin{entradilla}
+{\em Para {\color{introcolor}parchear un fichero ELF}, modificaremos una de las entradas
+  de la tabla de segmentos}
+\end{entradilla}
+
+La tabla de segmentos se encuentra en el offset \verb!e_phoff!,
+definido en la cabecera ELF. Este offset es relativo a la cabecera,
+por lo que tenemos que sumarle el tamaño de ésta.
+
+Ahora ya solo tenemos que recorrer la tabla de segmentos y encontrar
+uno del tipo \verb!PT_LOAD!. Como muchos os imaginaréis, esto debería
+ser un poco más complicado, debiendo existir comprobaciones extra con
+la información de secciones, de forma que si existieran varios
+segmentos de tipo NOTE, nos quedáramos con el correcto. En general,
+solo suele haber un segmento de tipo \verb!PT_NOTE! que estará
+asociado a la sección .note.ABI-tag. Os queda como ejercicio el dejar
+esta parte del código en condiciones :).
+
+El número de segmentos del programa lo encontramos en un campo en la
+cabecera ELF, y lo utilizamos en el bucle for para recorrerlas todas
+buscando la que nos interesa. Cuando encontramos una cabecera del tipo
+\verb!PT_NOTE!, procedemos a parchearla de la siguiente forma:
+
+\begin{itemize}
+\item Cambiamos el tipo a \verb!PT_LOAD! de forma que el segmento se
+  cargará en memoria a partir del contenido del fichero.
+\item Activamos todos los permisos: lectura, escritura y ejecución. En
+  general, solo los permisos de lectura y ejecución son necesarios,
+  pero en nuestro ejemplo vamos a necesitar escribir en este segmento,
+  así que activamos los tres.
+\item El offset o desplazamiento en el fichero, para este segmento
+  pasa a ser el tamaño del fichero, o dicho de otra forma, nuestro
+  código extra lo vamos a añadir al final del fichero.
+\item Actualizamos las direcciones de mapeo en memoria del segmento
+  para que apunten a una zona libre. Para ello le sumamos el tamaño
+  actual del fichero a la dirección base en la que todos los programas
+  ELF se cargan :).
+\item Actualizamos el nuevo tamaño de este segmento, el cual será el
+  tamaño del código que estamos añadiéndole al final.
+\item Y finalmente actualizamos el tipo de alienación, que para los
+  segmentos del tipo \verb!PT_LOAD! es habitualmente 0x1000.
+\end{itemize}
+
+Para navegar la tabla de segmentos utilizamos el campo \verb!e_phnum!
+de la cabecera ELF que nos indica el tamaño de cada una de las
+entradas. 
+
+Finalmente, si no encontramos ningún segmento del tipo
+\verb!PT_NOTE! terminamos con un error. Esto puede pasar si intentamos
+parchear un fichero dos veces. En la primera ejecución eliminamos la
+sección del tipo \verb!PT_NOTE!, de forma que en la segunda ejecución
+no lo encontraríamos.
+
+\sectiontext{white}{black}{MODIFICANDO LA CABECERA Y GRABANDO EL RESULTADO}
+
+Para terminar con el proceso de parcheado del fichero ELF, tenemos que
+reflejar en la cabecera del mismo los cambios realizados, añadir
+cualquier información extra que nos interese y grabar los resultados.
+
+Esto es lo que se consigue con este fragmento de código:
+
+\lstset{language=C,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+
+*((int*)((unsigned char*)code + size1 - 8)) = 
+          elf_hdr->e_entry;
+elf_hdr->e_entry = ADDRESS + size;
+/* Copiamos la clave al final del fichero */
+memset (((unsigned char*)code + size1 - 16), 
+       0, 8);
+strncpy (((unsigned char*)code + size1 - 16), 
+       argv[3], 8);
+
+write (fd, code, size1);
+close(fd);
+free (code);
+
+\end{lstlisting}
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+La modificación de la cabecera consiste en cambiar el punto de entrada
+del programa para que pase a ser el código que hemos inyectado, el
+cual se encuentra al final del fichero (ADDRES + size). Pero,
+necesitamos almacenar el punto de entrada real, de forma que nuestro
+código pueda ejecutar el programa real si la contraseña que escribimos
+es correcta.
+
+A continuación almacenamos la contraseña que hemos
+proporcionado desde la línea de comandos y terminamos escribiendo y
+cerrando el fichero para que los cambios realizados tengan efecto en
+el fichero ejecutable real.
+
+En estos momentos disponemos de una pequeña herramienta, que con unos
+pocos cambios, nos permitirá injectar fragmentos de código en
+cualquier ejecutable... básicamente tendréis que generalizar la última
+parte del programa que es específica para el código que nosotros vamos a
+insertar en este ejemplo.
+
+% Creando el código del password
+\sectiontext{white}{black}{CÓDIGO INYECTADO}
+
+El código a inyectar lo hemos escrito en ensamblador utilizando las
+llamadas al sistema del kernel Linux. En principio no podréis utilizar
+código normal compilado con cualquier herramienta. 
+
+Para ello, el
+parcheador que hemos visto en las secciones anteriores se vuelve muy
+complejo al tener que manejar las dependencias y la relocalización de
+código general... Además, para meteros en esos berenjenales
+necesitaréis un conocimiento del formato ELF muchísimo más profundo
+que lo que os hemos contado aquí.
+
+Vamos el código.
+
+\lstset{language=[x86masm]Assembler,frame=tb,framesep=5pt,basicstyle=\scriptsize}   
+\begin{lstlisting}
+BITS 32
+	
+_start:				
+  	jmp short get_fp	
+real_start:
+	pop esi
+        push esi
+	pusha
+	; write (1, "passwd:", 8);
+	mov eax, 4	; write syscall
+	mov ebx, 1	; stdout -> ebx
+	lea ecx, [esi]	; passwd string
+	mov edx, 8	; string size size
+	int 0x80
+	; -------------------------------
+	; read (0, buffer, 8)
+	mov eax, 3
+	dec ebx
+	lea ecx, [esi + 8]
+	int 0x80
+	; -------------------------------
+	; Compare passwd
+	push esi
+	xor ebx, ebx
+	mov edi, ecx
+	lea esi, [esi + 32]
+	mov ecx, 8 
+	rep cmpsb
+	jnz end
+	
+	; -------------------------------
+	; exit with error
+	pop esi
+	popa
+	pop esi
+	push dword [esi + 40]
+	ret
+end:	
+	pop esi
+	mov eax, 4		; write syscall
+	mov ebx, 1		; stdout -> ebx
+	lea ecx, [esi + 16]	; passwd string
+	mov edx, 16		; string size size
+	int 0x80
+
+	mov eax, 0x01		; exit syscall
+	int 0x80
+	; -------------------------------
+get_fp:
+	call real_start
+	; -------------------------------
+data0	db	'passwd:', 0
+data1   db      0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 
+                0x0a, 0x0a, 0x0a
+	db      'Wrong Password!', 0x0a
+	db      'sesame01'
+entryp  db      '        '
+
+\end{lstlisting}
+
+Sí, visto así parece muy escandaloso...es lo que tiene el ensamblador,
+pero es uno de los programas más tontos que se pueden escribir en
+ensamblador.
+
+Lo primero que vamos a comentar es el final del programa. La zona
+donde almacena sus datos. Como podéis ver, los últimos 8 bytes están
+reservados para almacenar el antiguo punto de entrada al programa, y
+los 8 anteriores almacenan la clave. 
+
+Estos son los dos valores que actualizamos desde nuestro programa
+parcheador, y tienen que estar al final por una muy buena razón.
+
+\sectiontext{white}{black}{CÓDIGO PIC}
+
+PIC significa {\em Position Independent Code}, es decir, código que
+puede ejecutarse en cualquier posición de memoria ya que no contiene
+ninguna referencia a ninguna posición de memoria absoluta.
+
+¿Y porque estamos hablando de esto ahora?... pues porque el código que
+estamos inyectando tiene que ser de este tipo, ya que de lo contrario
+tendríamos que proporcionar información de relocación que haría todo
+este proceso muy complejo o inviable.
+
+Respecto al código no tenemos grandes problemas... seleccionamos las
+instrucciones con cuidado para utilizar siempre desplazamientos en
+lugar de direcciones absolutas y ya está. El problema es el acceso a
+nuestros datos ya que, cuando se empiece a ejecutar el código no
+tendremos ni idea de en qué posición de memoria estarán.
+
+\begin{entradilla}
+{\em Tendremos que recurrir {\color{introcolor}a un truco para poder acceder a nuestros
+  datos} desde el ensamblador}
+\end{entradilla}
+
+Así que para acceder al bloque de datos utilizamos un bien conocido
+truco. Iniciamos nuestro programa con un salto a una instrucción call
+justo anterior a la zona de datos. La instrucción call a su vez
+saltará al punto de inicio de ejecución del programa, pero con la
+salvedad que en la pila tendremos la dirección de memoria siguiente a
+la instrucción call (la dirección a la que retornaríamos al ejecutar
+la instrucción ret), la cual, oh maravilla!, es el inicio de nuestro
+bloque de datos. Por eso, lo primero que hacemos al empezar el
+programa es leer un valor de la pila y volver a guardarlo para  su uso
+posterior.
+
+\ebOpage{introcolor}{0.35}{REVERSO TENEBROSO}
+
+\sectiontext{white}{black}{RESTO DEL PROGRAMA}
+
+Bien, el resto del programa es bastante tonto. En primer lugar
+encontramos un bloque de código encargado de mostrar el mensaje
+``password:'' en pantalla, para perdir al usuario que introduzca la
+clave que hayamos elegido.
+
+A continuación lee 8 caracteres del teclado y los almacena en un
+buffer. ¿Recordáis que marcamos el segmento con permisos de escritura?
+
+Ahora ya tenemos localizadas en memoria la clave que introdujo el
+usuario y la clave que hemos elegido para proteger nuestro programa,
+así que solo tenemos que compararlas con la típica \verb!rep cmpsb!.
+
+Tras la comparación, si las claves no coinciden, el programa mostrará
+un mensaje de error y terminará con la llamada al sistema exit. Por
+el contrario, si las claves coinciden, continuaremos la ejecución en
+el punto de entrada original de la aplicación parcheada, el cual, si
+recordáis, hemos almacenado al final del fichero cuando lo parcheamos.
+
+Para ejecutar el punto de entrada original, metemos su dirección en la
+pila y ejecutamos \verb!ret!... pero vosotros podéis hacerlo como más
+rabia os dé.
+
+Es necesario hacer un comentario final respecto al programa. Si os
+fijáis hay una instrucción \verb!pusha! al principio de todo, justo
+depués de conseguir el puntero a nuestros datos y una instrucción
+\verb!popa! justo antes de ejecutar el punto de entrada original.
+
+Con esto restauramos los valores de registros y flags existentes al
+inicio del programa, de forma que el programa original se encuentre un
+entorno sano para su ejecución. Si no lo hacemos, obtendremos algúnos
+core dumps cuando el programa termina.
+
+% Parcheando nuestros ejecutables
+\sectiontext{white}{black}{PROBANDO LA APLICACIÓN}
+
+Bueno, después de semejante rollo, vamos a probar nuestra
+aplicación. Para nuetras pruebas hemos elegido xeyes... pues porque es
+un programa simpático :).
+
+Veamos la secuencia de comandos
+
+{\scriptsize
+\begin{verbatim}
+occams@razor $ whereis xeyes
+xeyes: /usr/bin/xeyes /usr/X11R6/bin/xeyes /usr/bin/X11/xeyes 
+/usr/share/man/man1/xeyes.1x.gz
+occams@razor $ cp /usr/bin/xeyes xeyes-test
+
+occams@razor $ readelf -l xeyes-test 
+
+Elf file type is EXEC (Executable file)
+Entry point 0x8048f60
+There are 7 program headers, starting at offset 52
+
+Program Headers:
+  Type        Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg
+  PHDR        0x000034 0x08048034 0x08048034 0x000e0 0x000e0 R E
+  INTERP      0x000114 0x08048114 0x08048114 0x00013 0x00013 R  
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+  LOAD        0x000000 0x08048000 0x08048000 0x02610 0x02610 R E
+  LOAD        0x002620 0x0804b620 0x0804b620 0x00554 0x014cc RW 
+  DYNAMIC     0x00299c 0x0804b99c 0x0804b99c 0x00100 0x00100 RW 
+  NOTE        0x000128 0x08048128 0x08048128 0x00020 0x00020 R  
+  GNU_STACK   0x000000 0x00000000 0x00000000 0x00000 0x00000 RW 
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.ABI-tag .hash .dynsym .dynstr .gnu.version 
+.gnu.version_r .rel.dyn .rel.plt .init .plt .text .fini .rodata 
+   03     .data .eh_frame .dynamic .ctors .dtors .jcr .got .bss 
+   04     .dynamic 
+   05     .note.ABI-tag 
+   06     
+occam@razor $ ./parcheador xeyes-test codigo sesamo01
+occam@razor $ readelf -l xeyes-test 
+
+Elf file type is EXEC (Executable file)
+Entry point 0x8046fec
+There are 7 program headers, starting at offset 52
+
+Program Headers:
+  Type         Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg
+  PHDR        0x000034 0x08048034 0x08048034 0x000e0 0x000e0 R E
+  INTERP      0x000114 0x08048114 0x08048114 0x00013 0x00013 R  
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+  LOAD        0x000000 0x08048000 0x08048000 0x02610 0x02610 R E
+  LOAD        0x002620 0x0804b620 0x0804b620 0x00554 0x014cc RW 
+  DYNAMIC     0x00299c 0x0804b99c 0x0804b99c 0x00100 0x00100 RW 
+  LOAD        0x002fec 0x08046fec 0x08046fec 0x0008c 0x0008c RWE
+  GNU_STACK   0x000000 0x00000000 0x00000000 0x00000 0x00000 RW 
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .hash .dynsym .dynstr .gnu.version .gnu.version_r 
+.rel.dyn .rel.plt .init .plt .text .fini .rodata 
+   03     .data .eh_frame .dynamic .ctors .dtors .jcr .got .bss 
+   04     .dynamic 
+   05     .note.ABI-tag 
+   06     
+edma@eve:/mnt/data/work/security/mine/elf/elf-tests$ 
+
+\end{verbatim}
+}
+
+Bueno, y ahora a buscar las diferencias :). Punto de entrada, tipo de
+segmento, permisos, tamaños,... Esas cosas :)
+
+
+% Virus en Linux?
+\sectiontext{white}{black}{LIMITACIONES}
+
+Si habéis escrito los programas o los habéis descargado de la red
+probablemente, a estas alturas ya habréis encontrado muchas de las
+limitaciones de este ejemplo. Aquí os ponemos las principales:
+
+\begin{itemize}
+\item La clave se ve cuando se escribe.
+\item La clave tiene que ser de 8 caracteres. Ni más ni menos.
+\end{itemize}
+
+Bueno, esto era solo un ejemplo para ilustrar el proceso de
+manipulación de un fichero ELF. Si alguno soluciona algunos de estos
+problemas, que no dude en enviarnos sus soluciones para publicarlas en
+próximos números.
+
+\sectiontext{white}{black}{CONCEPTOS}
+
+Tenemos que admitir que nuestro ejemplo es bastante pobre, pero
+esperamos que ahora tengáis más claros algunos conceptos. El primero
+es cómo funcionan programas como los {\em packers} programas que
+comprimen ejecutables de una forma que siguen siendo ejecutables, o
+herramientas de protección para cifrar el ejecutable. Hablando de
+cifrado echadle un ojo al programa cryptelf de SLACKo que junto con
+los textos de Silvio Cesare nos han permitido escribir este artículo.
+
+El otro concepto que esperamos que os haya quedado claro es que: Sí,
+se pueden escribir virus para linux :)
+
+Nos leemos en el próximo número
+
+%\raggedcolumns
+\pagebreak
+
+\end{multicols}
+
+\pagebreak
