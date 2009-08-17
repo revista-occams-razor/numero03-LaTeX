@@ -1,7 +1,8 @@
 NUMBER=03
 EDITION=01
+BUILD=02
 
-NAME=occams-razor-${NUMBER}-${EDITION}
+NAME=occams-razor-${NUMBER}-${EDITION}-${BUILD}
 
 all: *tex
 	latex portada.tex && latex portada.tex && dvips portada.dvi -o ${NAME}.ps && ps2pdf ${NAME}.ps
